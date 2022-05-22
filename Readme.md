@@ -55,6 +55,8 @@ La aplicación puede ser tan sencilla como una aplicación de línea de comandos
 
 - Que al implementar una nueva variante de cualquiera de los elementos configurables, la aplicación visual necesite *el menor cambio posible* para incluir esta nueva variante en su interfaz (idealmente ningún cambio, y como mucho, adicionar una instancia de una clase en un *array*).
 
-- Mostrar el desarrollo de la partida paso a paso de forma interactiva, o directamente hasta el final. Dependiendo de la tecnología que escoja, esto puede ser desde imprimir en la terminal la ficha jugada (e.j., `[2:4]`) o mostrar una ficha en 3D. Pero, en cualquier caso, esta interfaz debe ser suficientemente flexible para que cuando cambien la estructura de las fichas o la longitud del juego, o cualquier otro aspecto que influya en cómo se visualiza, la interfaz gráfica se adapte de forma automática.
+- Mostrar el desarrollo de la partida paso a paso de forma interactiva, o directamente hasta el final. Dependiendo de la tecnología que escoja, esto puede ser desde imprimir en la terminal la ficha jugada (e.j., `[2:4]`) o mostrar una ficha en 3D.
+
+Independientemente de la tecnología utilizada, su interfaz debe ser suficientemente flexible para que cuando cambien la estructura de las fichas, o la longitud del juego, o cualquier otro aspecto que influya en cómo se visualiza, **la interfaz gráfica se adapte de forma automática**.
 
 ## Sobre la ingeniería de software
