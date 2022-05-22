@@ -71,6 +71,7 @@ Algunos consejos:
 - Priorice las interfaces sobre las clases abstractas, y la composición sobre la herencia.
 - Recuerde que las abstracciones se diseñan encima de las funcionalidades a implementar, y no solamente encima de los "conceptos" o "entidades" convencionales del dominio.
 - Recuerde el principio DRY y las estrategias de encapsulamiento existentes para reutilizar código y evitar la duplicidad de funcionalidades.
+- Utilice nombres de clases y variables descriptivos, y adicione comentarios en su código para explicar las motivaciones detrás de su diseño.
 - Y sobre todo, recuerde que ningún diseño pensado a priori sobrevive la prueba del tiempo. Empiece con el diseño más sencillo posible e introduzca abstracciones a medida que descubre que las necesita.
 
 ## Sobre la entrega
@@ -83,7 +84,7 @@ En la raíz de su proyecto debe haber un archivo `Readme.md` con **todas las ins
 
 Además, usted debe tener en la raíz de su repositorio un archivo de nombre `Report.pdf` que contendrá un reporte técnico de su proyecto. Este reporte tendrá una extensión mínima de 5 cuartillas, y ahí debe detallar su diseño de clases, exponiendo las motivaciones detrás de cada abstracción (clase, interfaz, método, etc.) así como todos los detalles de implementación que sean necesarios. Incluya fragmentos de código y capturas de pantalla para ayudar en la explicación.
 
-Para entregar su proyecto, usted debe [**abrir en este repositorio un *issue***](), donde incluirá el nombre de los miembros del equipo, el link a su repositorio, y el link directo a su archivo `Report.pdf`.
+Para entregar su proyecto, usted debe [**abrir en este repositorio un *issue***](https://github.com/matcom/domino/issues/new?assignees=&labels=&template=proyecto.md&title=Proyecto+de+Nombre+y+Nombre), donde incluirá el nombre de los miembros del equipo, el link a su repositorio, y el link directo a su archivo `Report.pdf`.
 
 La evaluación se realizará en dos partes. Primero, su mentor evaluará el reporte y hará los comentarios que considere necesarios en el *issue* correspondiente a su proyecto. Una vez que el mentor considere que su proyecto está en condiciones de ser expuesto, le dará una cita para exponer en persona en la Facultad. El resultado de esa exposición quedará plasmado en el *issue* correspondiente.
 
