@@ -49,3 +49,11 @@ Modifique las líneas siguientes con los detalles relevantes:
 - [ ] El reporte técnico explica de forma suficientemente detallada los pormenores del proyecto.
 - [ ] Los nombres de clases, métodos y variables son descriptivos.
 - [ ] Los comentarios son legibles y útiles para entender el funcionamiento del código.
+
+## Revisión
+
+**Fecha prevista:** 2020/XX/XX
+
+### Comentarios
+
+*(Para rellenar por el mentor)*
