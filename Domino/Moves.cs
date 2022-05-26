@@ -1,5 +1,15 @@
+using Domino.Tokens;
+using Domino.Players;
+using Domino.Utils;
+
 namespace Domino.Moves;
 
-public abstract class BaseMove {
-    // Data about move ? is this even a class ?
+public class BaseMove {
+    public BasePlayer Player { get; }
+    public GraphNode<BaseToken> Node { get; }
+
+    public BaseMove(BasePlayer player, GraphNode<BaseToken> node) {
+        this.Player = player;
+        this.Node = node;
+    }
 }

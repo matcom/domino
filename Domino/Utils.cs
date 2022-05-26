@@ -74,3 +74,40 @@ public class GraphLink<T> {
         this.To = to;
     }
 }
+
+public class BaseGraph<T> {
+    public T Value { get; protected set; }
+    public BaseGraph<T>[] Children { get; protected set; }
+
+    public BaseGraph(int degree, T value) {
+        this.Value = value;
+        this.Children = new BaseGraph<T>[degree];
+    }
+    public bool IsLeaf() {
+        return this.Children.All(graph => graph == null);
+    }
+    public void AddNodes(params BaseGraph<T>[] subgraph) {
+        for (int i = 0; i < Math.Min(Children.Length, subgraph.Length); i++) {
+            this.Children[i] = subgraph[i];
+        }
+    }
+    public void AddNode(int position, BaseGraph<T> subgraph) {
+        Children[position] = subgraph;
+    }
+    public void RemoveNode(int position) {
+        this.AddNode(position, null);
+    }
+}
+
+public static class Combinatorics {
+    public static void GenerateVariations(int n, int[] variation, int length, List<int[]> collection) {
+        if (length == variation.Length) {
+            collection.Add(new int[] {variation[0], variation[1]});
+            return;
+        }
+        for (int i = 0; i <= n; i++) {
+            variation[length] = i;
+            GenerateVariations(n, variation, length + 1, collection);
+        }
+    }
+}

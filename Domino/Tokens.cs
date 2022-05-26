@@ -3,13 +3,14 @@ using System.Collections.Generic;
 namespace Domino.Tokens;
 
 
-interface IPlaceable {
+public interface IPlaceable {
     public void Place();
 }
 
 public interface IMovable {
     public void Move();
 }
+
 
 public interface IMultiValue<T> {
     public IEnumerable<T> Values();
