@@ -1,10 +1,9 @@
 namespace Table;
 
-public class NodeGame
+public class NodeDimension : Node
 {
-    public Token ValueToken { get; set; }
-    public NodeGame[] Conections { get; set; }
-
+    public override Token ValueToken { get; set; }
+    public override Node[] Conections { get; set; }
     public int FirstConectionFree
     {
         get { return ConectionFree(); }
@@ -17,9 +16,9 @@ public class NodeGame
         }
         return -1;
     }
-    public NodeGame(int n)
+    public NodeDimension(int n)
     {
         this.ValueToken = null!;
-        this.Conections = new NodeGame[n];
+        this.Conections = new Node[n];
     }
 }
