@@ -1,82 +1,77 @@
 namespace Table;
 
-public class a
+public class TableTriangular : TableGame
 {
-
+    /// <summary>Nodos que contienen una ficha</summary>
+    public override HashSet<Node> PlayNode { get; protected set; }
+    /// <summary>Nodos disponibles para jugar</summary>
+    public override HashSet<Node> FreeNode { get; protected set; }
+    /// <summary>Nodos contenidos en el grafo</summary>
+    public Dictionary<Coordenates, Node> TableNode { get; protected set; }
+    public Dictionary<(int, int), int> CoordValor { get; protected set; }
+    public TableTriangular(Token token)
+    {
+        this.PlayNode = new HashSet<Node>();
+        this.FreeNode = new HashSet<Node>();
+        this.TableNode = new Dictionary<Coordenates, Node>();
+        this.CoordValor = new Dictionary<(int, int), int>();
+        Node node = this.CreateNode(new (int, int)[] { (0, 0), (2, 0), (1, -1) });
+        node.ValueToken = token;
+        this.Expand(node);
+        this.PlayNode.Add(node);
+    }
+    /// <summary>Expandir un nodo</summary>
+    /// <param name="node">Nodo que se desea expandir</param>
+    protected override void Expand(Node node)
+    {
+        (int, int)[] listCoord = (node as NodeGeometry)!.Ubication.Coord;
+        for (int i = 0; i < node.Conections.Length; i++)
+        {
+            (int, int)[] coordenates = Triangular(listCoord[i], listCoord[(i + 1 >= 3) ? i + 1 - 3 : i + 1], listCoord[(i + 2 >= 3) ? i + 2 - 3 : i + 2]);
+            Coordenates aux = new Coordenates(coordenates);
+            if (!this.TableNode.ContainsKey(aux))
+            {
+                this.FreeTable(this.CreateNode(coordenates));
+            }
+            int j = 0;
+            while (node.Conections[j] != null)
+            {
+                j++;
+                if (j == node.Conections.Length) break;
+            }
+            if (j == node.Conections.Length) break;
+            this.UnionNode(node, this.TableNode[aux], j);
+        }
+    }
+    public (int, int)[] Triangular((int, int) coord1, (int, int) coord2, (int, int) coord3)
+    {
+        bool nw = coord2.Item1 > coord1.Item1 && coord2.Item2 > coord1.Item2;
+        bool w = coord2.Item2 == coord1.Item2 && coord2.Item1 > coord1.Item1;
+        bool sw = coord2.Item1 > coord1.Item1 && coord2.Item2 < coord1.Item2;
+        if (nw)
+        {
+            if (coord3.Item1 > coord1.Item1) return new (int, int)[] { coord1, (coord2.Item1 - 2, coord2.Item2), coord2 };
+            else return new (int, int)[] { coord1, coord2, (coord1.Item1 + 2, coord1.Item2) };
+        }
+        else if (w)
+        {
+            if (coord3.Item2 > coord1.Item2) return new (int, int)[] { coord1, coord2, (coord3.Item1, coord3.Item2 - 2) };
+            return new (int, int)[] { coord1, coord2, (coord3.Item1, coord3.Item2 + 2) };
+        }
+        else if (sw)
+        {
+            if (coord3.Item1 < coord1.Item1) return new (int, int)[] { coord1, (coord1.Item1 + 2, coord1.Item1), coord2 };
+            else return new (int, int)[] { coord1, coord2, (coord2.Item1 - 2, coord2.Item2) };
+        }
+        else return Triangular(coord2, coord1, coord3);
+    }
+    /// <summary>Crear un nodo</summary>
+    /// <param name="coordenates">Cooredenadas de la ficha</param>
+    /// <returns>Nuevo nodo</returns>
+    protected NodeGeometry CreateNode((int, int)[] coordenates)
+    {
+        NodeGeometry node = new NodeGeometry(coordenates);
+        this.TableNode.Add(node.Ubication, node);
+        return node;
+    }
 }
-// namespace Table;
-
-// public class TableTriangular : TableGame
-// {
-//     /// <summary>Nodos que contienen una ficha</summary>
-//     public override HashSet<Node> PlayNode { get; protected set; }
-//     /// <summary>Nodos disponibles para jugar</summary>
-//     public override HashSet<Node> FreeNode { get; protected set; }
-//     /// <summary>Nodos contenidos en el grafo</summary>
-//     public List<Node> TableNode { get; protected set; }
-//     public TableTriangular(Token token)
-//     {
-//         this.PlayNode = new HashSet<Node>();
-//         this.FreeNode = new HashSet<Node>();
-//         this.TableNode = new List<Node>();
-//         INode<Token, NodeGeometry> node = CreateNode(new (int, int)[] { (0, 0), (0, 2), (1, 1) });
-//         node.ValueToken = token;
-//         Expand(node);
-//         this.PlayNode.Add(node);
-//     }
-//     /// <summary>Colocar una ficha en el tablero</summary>
-//     /// <param name="node">Nodo por el cual se juega la ficha</param>
-//     public void PlayTable(INode<Token, Node> node, Token token)
-//     {
-//         node.ValueToken = token;
-//         this.Expand(node);
-//         this.PlayNode.Add(node);
-//         FreeNode.Remove(node);
-//     }
-//     /// <summary>Indica que un nodo esta libre para jugar</summary>
-//     /// <param name="node">Nodo para realizar la operacion</param>
-//     public void FreeTable(INode<Token, Node> node)
-//     {
-//         if (this.PlayNode.Contains(node)) return;
-//         this.FreeNode.Add(node);
-//     }
-//     /// <summary>Recorrer el grafo</summary>
-//     /// <param name="node">Nodo inicial</param>
-//     /// <param name="ind"Arista del nodo al se quiere ir</param>
-//     /// <returns>Node vecino al cual se realiza el movimiento</returns>
-//     public Node MoveTable(Node node, int ind)
-//     {
-//         return node.Conections[ind];
-//     }
-//     /// <summary>Unir dos nodos</summary>
-//     /// <param name="right">Nodo para realizar la union</param>
-//     /// <param name="left">Nodo para realizar la union</param>
-//     /// <param name="ind">Arista por la que los nodos se conectan</param>
-//     protected void UnionNode(Node right, Node left, int ind)
-//     {
-//         right.Conections[ind] = left;
-//         left.Conections[ind] = right;
-//     }
-//     /// <summary>Expandir un nodo</summary>
-//     /// <param name="node">Nodo que se desea expandir</param>
-//     public override void Expand(Node node)
-//     {
-//         for (int i = 0; i < node.Conections.Length; i++)
-//         {
-//             if (node.Conections[i] == null)
-//             {
-//                 this.UnionNode((node as Node)!, (CreateNode(node.Conections.Length) as Node)!, i);
-//             }
-//             this.FreeTable(node.Conections[i]);
-//         }
-//     }
-//     /// <summary>Crear un nodo</summary>
-//     /// <param name="coordenates">Cooredenadas de la ficha</param>
-//     /// <returns>Nuevo nodo</returns>
-//     protected Node CreateNode((int, int)[] coordenates)
-//     {
-//         Node node = new NodeGeometry(coordenates);
-//         this.TableNode.Add(node);
-//         return node;
-//     }
-// }

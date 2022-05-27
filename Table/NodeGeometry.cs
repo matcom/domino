@@ -14,7 +14,9 @@ public class NodeGeometry : Node
     }
     public override bool Equals(object? obj)
     {
-        return this.Ubication.Equals(obj);
+        NodeGeometry aux = (obj as NodeGeometry)!;
+        if (aux == null) return false;
+        return this.Ubication.Equals(aux.Ubication);
     }
     public override int GetHashCode()
     {

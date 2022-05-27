@@ -4,33 +4,33 @@ using Judge;
 using Game;
 
 Token t = new Token(new int[] { 1, 2, 3 });
-TableGame a = new TableDimension(t);
-//TableComplex b = new TableComplex(t);
-a.PlayTable(a.TableNode[1], new Token(new int[] { 4, 5, 6 }));
-// System.Console.WriteLine(a.PlayNode.Count);
-// System.Console.WriteLine(a.FreeNode.Count);
-// System.Console.WriteLine(a.TableNode.Count);
-System.Console.WriteLine(a.PlayNode.Count);
+TableTriangular a = new TableTriangular(t);
 System.Console.WriteLine(a.FreeNode.Count);
-System.Console.WriteLine(a.TableNode.Count);
-// System.Console.WriteLine("****");
-// for (int i = b.TableNode.Count() - 3; i < b.TableNode.Count(); i++)
-// {
-//     for (int j = 0; j < 3; j++)
-//     {
-//         if (b.TableNode[i].Conections[j] == null) System.Console.WriteLine(j + " " + i);
-//     }
-// }
-// Coordenates a = new Coordenates(new (int, int)[] { (1, 2), (1, 3), (0, 3) });
-// Coordenates b = new Coordenates(new (int, int)[] { (1, 2), (0, 3), (1, 3) });
+int i = 0;
+//Node b = new NodeGeometry(new (int, int)[] { (0, 0) });
+System.Console.WriteLine("****");
+//Console.WriteLine(a.FreeNode.Contains(b));
 
-// HashSet<Coordenates> d = new HashSet<Coordenates>();
-// d.Add(a);
+//System.Console.WriteLine(a.FreeNode.Contains(a.e[1]));
+NodeGeometry b = null;
+foreach (var item in a.FreeNode)
+{
+    i++;
+    b = item as NodeGeometry;
+    if (i == 3) break;
+    // System.Console.WriteLine(a.TableNode.ContainsKey(b.Ubication));
+    System.Console.WriteLine(a.FreeNode.Contains(item));
+}
+a.PlayTable(b, new Token(new int[] { 0, 0, 0 }));
+foreach (var item in a.FreeNode)
+{
+    i++;
+    b = item as NodeGeometry;
+    if (i == 3) break;
+    // System.Console.WriteLine(a.TableNode.ContainsKey(b.Ubication));
+    System.Console.WriteLine(a.FreeNode.Contains(item));
+}
+a.PlayTable(b, new Token(new int[] { 0, 0, 0 }));
+System.Console.WriteLine(a.FreeNode.Count);
 
-// System.Console.WriteLine(a.Equals(b));
-// System.Console.WriteLine(d.Contains(b));
-// System.Console.WriteLine(a.GetHashCode());
-// System.Console.WriteLine(b.GetHashCode());
-// System.Console.WriteLine(new int[2] { 1, 2 }.GetHashCode());
-// System.Console.WriteLine(new int[2] { 1, 2 }.GetHashCode());
 

@@ -2,13 +2,17 @@ namespace Table;
 
 public class Coordenates
 {
-    public (int, int)[] ListCoord { get; private set; }
+    public (int, int)[] Coord { get; private set; }
+    private (int, int)[] ListCoord { get; set; }
     public Coordenates((int, int)[] list)
     {
         (int, int)[] listCopy = new (int, int)[list.Length];
+        (int, int)[] listCopy1 = new (int, int)[list.Length];
         Array.Copy(list, listCopy, list.Length);
-        // Array.Sort(listCopy);
+        Array.Copy(list, listCopy1, list.Length);
+        Array.Sort(listCopy);
         this.ListCoord = listCopy;
+        this.Coord = listCopy1;
     }
     public override bool Equals(object? obj)
     {
