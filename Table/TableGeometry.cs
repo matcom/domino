@@ -21,9 +21,9 @@ public abstract class TableGeometry : TableGame
         this.Expand(node);
         this.PlayNode.Add(node);
     }
-    /// <summary>Expandir los nodos con sus respectivas coordenadas</summary>
+    /// <summary>Buscar las coordenadas de un nodo expandido</summary>
     /// <param name="coordenates">Coordenadas del nodo a expandir</param>
-    /// <returns>Coordenadas de los nodos expandidos</returns>
+    /// <returns>Coordenadas del nodo expandido</returns>
     protected abstract (int, int)[] ExpandGeometry((int, int)[] coordenates);
     /// <summary>Asignar las coordenadas obtenidas en ExpandGeometry</summary>
     /// <param name="coordenates">Coordenadas del nodo a asignar</param>
