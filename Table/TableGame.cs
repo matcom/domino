@@ -7,13 +7,13 @@ public abstract class TableGame
     /// <summary>Nodos disponibles para jugar</summary>
     public abstract HashSet<Node> FreeNode { get; protected set; }
     /// <summary>Nodos contenidos en el grafo</summary>
-    //public abstract IEnumerable<Node> TableNode { get; protected set; }
+    public abstract List<Node> TableNode { get; protected set; }
     /// <summary>Expandir un nodo</summary>
     /// <param name="node">Nodo que se desea expandir</param>
     protected abstract void Expand(Node node);
     /// <summary>Colocar una ficha en el tablero</summary>
     /// <param name="node">Nodo por el cual se juega la ficha</param>
-    public virtual void PlayTable(Node node, Token token)
+    public void PlayTable(Node node, Token token)
     {
         node.ValueToken = token;
         this.Expand(node);
@@ -22,7 +22,7 @@ public abstract class TableGame
     }
     /// <summary>Indica que un nodo esta libre para jugar</summary>
     /// <param name="node">Nodo para realizar la operacion</param>
-    public virtual void FreeTable(Node node)
+    public void FreeTable(Node node)
     {
         if (this.PlayNode.Contains(node)) return;
         this.FreeNode.Add(node);

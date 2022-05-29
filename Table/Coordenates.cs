@@ -2,8 +2,10 @@ namespace Table;
 
 public class Coordenates
 {
+    /// <summary>Lista de coordenadas</summary>
     public (int, int)[] Coord { get; private set; }
-    private (int, int)[] ListCoord { get; set; }
+    /// <summary>Lista de coordenadas ordenadas</summary>
+    private (int, int)[] _listCoord { get; set; }
     public Coordenates((int, int)[] list)
     {
         (int, int)[] listCopy = new (int, int)[list.Length];
@@ -11,7 +13,7 @@ public class Coordenates
         Array.Copy(list, listCopy, list.Length);
         Array.Copy(list, listCopy1, list.Length);
         Array.Sort(listCopy);
-        this.ListCoord = listCopy;
+        this._listCoord = listCopy;
         this.Coord = listCopy1;
     }
     public override bool Equals(object? obj)
@@ -19,14 +21,14 @@ public class Coordenates
         Coordenates aux = (obj as Coordenates)!;
         if (aux == null) return false;
         bool equal = true;
-        for (int i = 0; i < this.ListCoord.Length; i++)
+        for (int i = 0; i < this._listCoord.Length; i++)
         {
-            equal = equal && this.ListCoord[i] == aux.ListCoord[i];
+            equal = equal && this._listCoord[i] == aux._listCoord[i];
         }
         return equal;
     }
     public override int GetHashCode()
     {
-        return this.ListCoord[0].GetHashCode();
+        return this._listCoord[0].GetHashCode();
     }
 }

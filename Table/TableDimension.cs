@@ -2,12 +2,9 @@ namespace Table;
 
 public class TableDimension : TableGame
 {
-    /// <summary>Nodos que contienen una ficha</summary>
     public override HashSet<Node> PlayNode { get; protected set; }
-    /// <summary>Nodos disponibles para jugar</summary>
     public override HashSet<Node> FreeNode { get; protected set; }
-    /// <summary>Nodos contenidos en el grafo</summary>
-    public List<Node> TableNode { get; protected set; }
+    public override List<Node> TableNode { get; protected set; }
     public TableDimension(Token token)
     {
         this.PlayNode = new HashSet<Node>();

@@ -3,34 +3,18 @@ using Player;
 using Judge;
 using Game;
 
-Token t = new Token(new int[] { 1, 2, 3 });
-TableTriangular a = new TableTriangular(t);
+Token t = new Token(new int[] { 1, 2, 3, 4, 5, 6 });
+TableHexagonal a = new TableHexagonal(t, new (int, int)[] { (0, 0), (2, 0), (3, 1), (2, 2), (0, 2), (-1, 1) });
+// TableTriangular a = new TableTriangular(t, new (int, int)[] { (0, 0), (1, 1), (2, 0) });
 System.Console.WriteLine(a.FreeNode.Count);
-int i = 0;
 //Node b = new NodeGeometry(new (int, int)[] { (0, 0) });
-System.Console.WriteLine("****");
+//System.Console.WriteLine("****");
 //Console.WriteLine(a.FreeNode.Contains(b));
 
-//System.Console.WriteLine(a.FreeNode.Contains(a.e[1]));
-NodeGeometry b = null;
-foreach (var item in a.FreeNode)
-{
-    i++;
-    b = item as NodeGeometry;
-    if (i == 3) break;
-    // System.Console.WriteLine(a.TableNode.ContainsKey(b.Ubication));
-    System.Console.WriteLine(a.FreeNode.Contains(item));
-}
-a.PlayTable(b, new Token(new int[] { 0, 0, 0 }));
-foreach (var item in a.FreeNode)
-{
-    i++;
-    b = item as NodeGeometry;
-    if (i == 3) break;
-    // System.Console.WriteLine(a.TableNode.ContainsKey(b.Ubication));
-    System.Console.WriteLine(a.FreeNode.Contains(item));
-}
-a.PlayTable(b, new Token(new int[] { 0, 0, 0 }));
+a.PlayTable(a.TableNode[1], new Token(new int[] { 0, 0, 0 }));
 System.Console.WriteLine(a.FreeNode.Count);
+a.PlayTable(a.TableNode[9], new Token(new int[] { 0, 0, 0 }));
+System.Console.WriteLine(a.FreeNode.Count);
+System.Console.WriteLine(a.FreeNode.Contains(a.TableNode[2]));
 
 
