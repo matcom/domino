@@ -1,43 +1,63 @@
 namespace DominoEngine;
 
-public abstract class Piece {}
+public abstract class Piece { }
 
-public class IntDominoPiecesGenerator
+public abstract class DominoPiecesGenerator<T> where T : ILinkerable
 {
-    List<DominoPiece<Int>> pieces = new List<DominoPiece<Int>>();
-    public IntDominoPiecesGenerator(int n)
+    List<DominoPiece<T>> pieces = new List<DominoPiece<T>>();
+    public DominoPiecesGenerator(int number_of_sides, int max)
     {
-        Generator(n, 0, new Int[n], new bool[n]);
+        Generator(number_of_sides, max, 0, new List<T>(), new bool[max]);
     }
 
-    public void Generator(int n, int init, Int[] arr, bool[] mask)
+    public void Generator(int number_of_sides, int max, int asigned, List<T> sides, bool[] mask)
     {
-        if(true)
+        if (number_of_sides == asigned)
+        {
+            DominoPiece<T> new_piece = new DominoPiece<T>(sides);
+            pieces.Add(new_piece);
+            return;
+        }
 
-        for (int i = init; i < n; i++)
+        for (int i = 0; i < max; i++)
         {
             if (!mask[i])
             {
-                arr[init] = new Int(i);
                 mask[i] = true;
-                Generator(n, init++, arr, mask);
+                T new_side = Create(i);
+                sides.Add(new_side);
+                Generator(number_of_sides, max, asigned++, sides, mask);
+                sides.Remove(new_side);
                 mask[i] = false;
-                arr[init] = null!;
             }
         }
+    }
+
+    public abstract T Create(int a);
+}
+
+public class IntDominoPieceGenerator : DominoPiecesGenerator<Int>
+{
+    public IntDominoPieceGenerator(int number_of_sides, int max) : base(number_of_sides, max)
+    {
+    }
+
+    public override Int Create(int a)
+    {
+        return new Int(a);
     }
 }
 
 public class DominoPiece<T> : Piece where T : ILinkerable
 {
     public Dictionary<T, bool> elem;
-    public DominoPiece(T[] arr)
+    public DominoPiece(IList<T> sides)
     {
         elem = new Dictionary<T, bool>();
 
-        foreach (var item in arr)
+        foreach (var item in sides)
         {
-            if (!elem.ContainsKey(item)) 
+            if (!elem.ContainsKey(item))
                 elem.Add(item, true);
         }
     }
@@ -59,7 +79,7 @@ public class DominoPiece<T> : Piece where T : ILinkerable
         elem[e] = false;
     }
 
-    public static void Match(DominoBoard<T> state, Tuple<DominoPiece<T>,DominoPiece<T>,T,T> tuple)
+    public static void Match(DominoBoard<T> state, Tuple<DominoPiece<T>, DominoPiece<T>, T, T> tuple)
     {
         tuple.Item1.MarkAsUsed(tuple.Item3);
         tuple.Item2.MarkAsUsed(tuple.Item4);
