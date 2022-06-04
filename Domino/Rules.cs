@@ -1,5 +1,9 @@
 namespace Domino.Rules;
 
-public abstract class BaseRule {
+public interface IRule {
     // Is next move valid
+}
+
+public interface IRuleSet<TRule> where TRule : IRule {
+
 }

@@ -6,9 +6,9 @@ namespace Domino.Moves;
 
 public class BaseMove {
     public BasePlayer Player { get; }
-    public GraphNode<BaseToken> Node { get; }
+    public GraphNode<IToken> Node { get; }
 
-    public BaseMove(BasePlayer player, GraphNode<BaseToken> node) {
+    public BaseMove(BasePlayer player, GraphNode<IToken> node) {
         this.Player = player;
         this.Node = node;
     }

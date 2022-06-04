@@ -3,25 +3,25 @@ using System.Collections.Generic;
 namespace Domino.Tokens;
 
 
-public interface IPlaceable {
+public interface IPlaceableToken {
     public void Place();
 }
 
-public interface IMovable {
+public interface IMovableToken {
     public void Move();
 }
 
 
-public interface IMultiValue<T> {
+public interface IMultiValueToken<T> {
     public IEnumerable<T> Values();
 }
 
-public abstract class BaseToken {
+public interface IToken {
     // Value
     public abstract double Value();
 }
 
-public class DominoToken : BaseToken, IPlaceable, IMultiValue<int> {
+public class DominoToken : IToken, IPlaceableToken, IMultiValueToken<int> {
     readonly List<int> values;
 
     public DominoToken(int value1, int value2) {
@@ -31,7 +31,7 @@ public class DominoToken : BaseToken, IPlaceable, IMultiValue<int> {
     public IEnumerable<int> Values() {
         return this.values;
     }
-    public override double Value()
+    public double Value()
     {
         double value = 0;
 

@@ -14,13 +14,6 @@ public class Graph<T> {
     public HashSet<GraphNode<T>> Nodes { get; protected set; }
     public GraphNode<T> Root { get; }
 
-    public Graph() {
-        this.Nodes = new HashSet<GraphNode<T>>();
-        this.Links = new HashSet<GraphLink<T>>();
-
-        this.Root = new GraphNode<T>();
-        Nodes.Add(this.Root);
-    }
     public Graph(T root) {
         this.Nodes = new HashSet<GraphNode<T>>();
         this.Links = new HashSet<GraphLink<T>>();
@@ -72,30 +65,6 @@ public class GraphLink<T> {
     public GraphLink(GraphNode<T> from, GraphNode<T> to) {
         this.From = from;
         this.To = to;
-    }
-}
-
-public class BaseGraph<T> {
-    public T Value { get; protected set; }
-    public BaseGraph<T>[] Children { get; protected set; }
-
-    public BaseGraph(int degree, T value) {
-        this.Value = value;
-        this.Children = new BaseGraph<T>[degree];
-    }
-    public bool IsLeaf() {
-        return this.Children.All(graph => graph == null);
-    }
-    public void AddNodes(params BaseGraph<T>[] subgraph) {
-        for (int i = 0; i < Math.Min(Children.Length, subgraph.Length); i++) {
-            this.Children[i] = subgraph[i];
-        }
-    }
-    public void AddNode(int position, BaseGraph<T> subgraph) {
-        Children[position] = subgraph;
-    }
-    public void RemoveNode(int position) {
-        this.AddNode(position, null);
     }
 }
 
