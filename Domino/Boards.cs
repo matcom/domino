@@ -13,7 +13,7 @@ public abstract class BaseBoard {
     }
     // Move history
     public abstract IEnumerable<BaseMove> Moves();
-    public abstract void AddMove(BasePlayer player, IToken token, GraphNode<IToken> node);
+    public abstract void AddMove(BaseMove move);
 }
 
 public class DominoBoard : BaseBoard {
@@ -24,9 +24,7 @@ public class DominoBoard : BaseBoard {
         return this.moves;
     }
 
-    public override void AddMove(BasePlayer player, IToken token, GraphNode<IToken> node) {
-        node.SetValue(token);
-        this.moves.Add(new BaseMove(player, node));
-        this.Table.AddNodes(node, 1);
+    public override void AddMove(BaseMove move) {
+        this.moves.Add(move);
     }
 }

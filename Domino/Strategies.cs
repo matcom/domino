@@ -1,15 +1,15 @@
 using Domino.Tokens;
-using Domino.Rules;
 using Domino.Boards;
+using Domino.Moves;
 
 namespace Domino.Strategies;
 
-public abstract class BaseStrategy {
-    public abstract void MakeMove(IEnumerable<IToken> tokens, IRuleSet<IRule> rules, BaseBoard board);
+public interface IStrategy<TMove> where TMove : BaseMove {
+    public TMove MakeMove(IEnumerable<IToken> tokens, BaseBoard board);
 }
 
-public class GreedyStrategy : BaseStrategy {
-    public override void MakeMove(IEnumerable<IToken> tokens, IRuleSet<IRule> rules, BaseBoard board) {
+public class GreedyStrategy<TMove> : IStrategy<TMove> where TMove : BaseMove {
+    public TMove MakeMove(IEnumerable<IToken> tokens, BaseBoard board) {
         throw new NotImplementedException();
     }
 }
