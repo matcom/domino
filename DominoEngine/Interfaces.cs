@@ -1,28 +1,36 @@
 namespace DominoEngine;
 
-public interface IPlayer<T>
+public interface IGenerator<T>
 {
-    public virtual void Play(IBoard<T> board){}
+    public List<Ficha<T>> Generate(int n);
 }
 
-public interface IRandomPlayer<T> : IPlayer<T>
+public interface IDealer<T>
 {
-    public virtual void PlayRandom(){}
+    public void Dealing(int piecesForPlayers, IEnumerable<Hand<T>> hands, IList<Ficha<T>> fichas);
 }
 
-public interface ILinkerable
+public interface IMatcher<T>
 {
-    public bool ConectTo(ILinkerable d, ILinker<ILinkerable> linker);
+    public bool CanMatch(T toParent, bool rigth);
 }
 
-public interface IBoard<T>
+public interface ITurner<T>
 {
-    public void NextAction(IPlayer<T> player, IBoard<T> state);
-
-    public abstract IList<T> PossiblesActions();
+    public Player<T> NextTurn();
 }
 
-public interface ILinker<T>
+public interface IFinisher<T>
 {
-    public bool Link(T t1, T t2);
+    public bool IsEnd();
+}
+
+public interface IScorer<T>
+{
+    public double Scorer();
+}
+
+public interface ICloneable<T> : ICloneable
+{
+    public new T Clone();
 }
