@@ -3,30 +3,25 @@ namespace DominoEngine;
 public class Rules<T>
 {
     ITurner<T> _turner;
-    IScorer<T> _scorer;
+    // IScorer<T> _scorer;
     IFinisher<T> _finisher;
-    IMatcher<T> _matcher;
 
-    public Rules(ITurner<T> turner, IScorer<T> scorer, IFinisher<T> finisher, IMatcher<T> matcher)
+    public Rules(ITurner<T> turner, IFinisher<T> finisher)
     {
         _turner = turner;
-        _scorer = scorer;
+        // _scorer = scorer;
         _finisher = finisher;
-        _matcher = matcher;
     }
-
-    public bool CanMatch(T toParent, bool rigth) => _matcher.CanMatch(toParent, rigth);
+    
     public Player<T> NexTurn() => _turner.NextTurn();
     public bool IsEnd() => _finisher.IsEnd();
 }
 
 public abstract class Finisher<T> : IFinisher<T>
 {
-    protected List<bool> _turns;
-    protected Dictionary<Player<T>, List<Ficha<T>>> _hands;
-    public Finisher(List<bool> turns, Dictionary<Player<T>, List<Ficha<T>>> hands)
-    {
-        _turns = turns;   
+    protected Dictionary<Player<T>, Hand<T>> _hands;
+    public Finisher(Dictionary<Player<T>, Hand<T>> hands)
+    { 
         _hands = hands;
     }
     public abstract bool IsEnd();
@@ -34,13 +29,13 @@ public abstract class Finisher<T> : IFinisher<T>
 
 public class ClassicFinisher : Finisher<int>
 {
-    public ClassicFinisher(List<bool> turns, Dictionary<Player<int>, List<Ficha<int>>> hands) : base(turns, hands)
+    public ClassicFinisher(Dictionary<Player<int>, Hand<int>> hands) : base(hands)
     {
     }
 
     public override bool IsEnd()
     {
-        return PlayerWin() || AllPasses();
+        return PlayerWin();
     }
 
     private bool PlayerWin()
@@ -51,16 +46,6 @@ public class ClassicFinisher : Finisher<int>
         }
 
         return false;
-    }
-
-    private bool AllPasses()
-    {
-        for (int i = 0; i < _hands.Count; i++)
-        {
-            if (_turns[_turns.Count-1-i]) return false;
-        }
-
-        return true;
     }
 }
 
@@ -142,6 +127,7 @@ public class ClassicDealer : Dealer<int>
                 }
 
                 hand.Add(fichas[m]);
+                mask[m] = true;
             }
         }
     }
@@ -149,18 +135,28 @@ public class ClassicDealer : Dealer<int>
 
 public abstract class Generator<T> : IGenerator<T>
 {
-    public abstract List<Ficha<T>> Generate(int n);
+    protected int _number;
+    protected Generator(int number)
+    {
+        _number = number;
+    }
+
+    public abstract List<Ficha<T>> Generate();
 }
 
 public class ClassicGenerator : Generator<int>
 {
-    public override List<Ficha<int>> Generate(int n)
+    public ClassicGenerator(int number) : base(number)
+    {
+    }
+
+    public override List<Ficha<int>> Generate()
     {
         List<Ficha<int>> fichas = new List<Ficha<int>>();
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < _number; i++)
         {
-            for (int j = i; j < n; j++)
+            for (int j = i; j < _number; j++)
             {
                 fichas.Add(new Ficha<int>(i,j));
             }

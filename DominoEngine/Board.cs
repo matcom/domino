@@ -25,8 +25,6 @@ public class Node<T>
     public Node<T>? Parent { get => _parent; set => _parent = value; }
 }
 
-public record Ficha<T>(T Head, T Tail);
-
 public class StartNode<T> : Node<T>
 {
     public StartNode(T toParent, T toChild) : base(toParent, toChild, 0, null) { }
@@ -48,6 +46,17 @@ public class Board<T> : IEnumerable<(int turn, bool right, T toParent, T toChild
         _left = Salida;
         _right = Salida;
     }
+
+    // public Node<T> this[int index]
+    // {
+    //     get
+    //     {
+    //         foreach (var item in this.GetEnumerator)
+    //         {
+    //             if (item.turn == index) 
+    //         }
+    //     }
+    // }
 
     public bool AddLeft(T matching, T other, int turn)
     {
@@ -124,70 +133,31 @@ public class Board<T> : IEnumerable<(int turn, bool right, T toParent, T toChild
     }
 }
 
-public record Move<T>(T Head, Ficha<T> ficha, bool rigth, Board<T> board);
-
-public class Hand<T> : IList<Ficha<T>>, ICloneable<Hand<T>>
-{
-    List<Ficha<T>> fichas;
-    public Hand(List<Ficha<T>> Fichas = null!)
-    {
-        fichas = (Fichas is null) ? new List<Ficha<T>>() : Fichas;
-    }
-
-    public Ficha<T> this[int index] { get => fichas[index]; set => fichas[index] = value; }
-
-    public int Count => fichas.Count;
-
-    public bool IsReadOnly => throw new NotImplementedException();
-
-    public void Add(Ficha<T> item) => fichas.Add(item);
-
-    public void Clear() => fichas.Clear();
-
-    public Hand<T> Clone()
-    {
-        List<Ficha<T>> new_list = new List<Ficha<T>>();
-
-        foreach (var item in fichas) new_list.Add(item);
-
-        return new Hand<T>(new_list);
-    }
-
-    public bool Contains(Ficha<T> item) => fichas.Contains(item);
-
-    public void CopyTo(Ficha<T>[] array, int arrayIndex)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerator<Ficha<T>> GetEnumerator()
-    {
-        return fichas.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    public int IndexOf(Ficha<T> item) => fichas.IndexOf(item);
-
-    public void Insert(int index, Ficha<T> item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Remove(Ficha<T> item) => fichas.Remove(item);
-
-    public void RemoveAt(int index) => fichas.RemoveAt(index);
-
-    object ICloneable.Clone()
-    {
-        throw new NotImplementedException();
-    }
-}
-
 public abstract class Player<T>
 {
+    private Hand<T> _hand;
 
+    public Player(Hand<T> hand)
+    {
+        _hand = hand;
+    }
+
+    public Hand<T> Hand { get => _hand; }
+
+    public abstract Move<T> Play(IList<Move<T>> moves);
+    public abstract Ficha<T> Play();
+}
+
+public class RandomPlayer<T> : Player<T>
+{
+    public RandomPlayer(Hand<T> hand) : base(hand) {}
+    public override Move<T> Play(IList<Move<T>> moves)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Ficha<T> Play()
+    {
+        throw new NotImplementedException();
+    }
 }

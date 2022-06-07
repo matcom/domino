@@ -2,7 +2,7 @@ namespace DominoEngine;
 
 public interface IGenerator<T>
 {
-    public List<Ficha<T>> Generate(int n);
+    public List<Ficha<T>> Generate();
 }
 
 public interface IDealer<T>
