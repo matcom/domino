@@ -49,7 +49,7 @@ public class ClassicFinisher : Finisher<int>
     }
 }
 
-public abstract class Matcher<T> : IMatcher<T>
+public class Matcher<T> : IMatcher<T>
 {
     protected Board<T> _board;
     protected Node<T> _left;
@@ -62,7 +62,7 @@ public abstract class Matcher<T> : IMatcher<T>
         _rigth = board.Right;
     }
 
-    public abstract bool CanMatch(T toParent, bool right);
+    public virtual bool CanMatch(T toParent, bool right) => toParent!.Equals(right? _rigth.ToChild : _left.ToChild);
 }
 
 public class ClassicMatcher : Matcher<int>

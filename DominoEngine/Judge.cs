@@ -14,9 +14,11 @@ public class Judge<T> {
 
     void Init()
     {
-        _playInfo.FirstPlay(_rules.NexTurn().Play());
+        Player<T> firstplayer = _rules.NexTurn();
+        Ficha<T> salida = firstplayer.Play();
+        _playInfo.FirstPlay(salida, firstplayer);
 
-        while (NotFinished())
+        while (NotFinished() || _playInfo.CountMoves() != 0)
         {
             Play();
         }
@@ -49,7 +51,7 @@ public class Judge<T> {
 
 public class PlayInfo<T>
 {
-    private Board<T>? _board;
+    public Board<T>? _board;
 	private Dictionary<Player<T>, Hand<T>> _hands = new Dictionary<Player<T>, Hand<T>>();
     private Dictionary<Node<T>, Dictionary<Player<T>, List<Move<T>>>> _playersNextMove;
     IMatcher<T>? _matcher;
@@ -61,15 +63,13 @@ public class PlayInfo<T>
         _hands = hands;
         _turns = turns;
         _playersNextMove = new Dictionary<Node<T>, Dictionary<Player<T>, List<Move<T>>>>();
-        _playersNextMove.Add(_board!.Right, new Dictionary<Player<T>, List<Move<T>>>());
-        _playersNextMove.Add(_board!.Left, new Dictionary<Player<T>, List<Move<T>>>());
     }
 
     public bool ValidMove(Move<T> move, Player<T> player) => _hands[player].Contains(move.Ficha);
 
-    public void SetMatcher(IMatcher<T> matcher)
+    public void SetMatcher()
     {
-        _matcher = matcher;
+        _matcher = new Matcher<T>(_board!);
     }
 
     public int CountMoves()
@@ -100,8 +100,10 @@ public class PlayInfo<T>
             {
                 if (_matcher!.CanMatch(ficha.Head, rigth)) moves.Add(new Move<T>(ficha.Head, ficha, rigth));
                 if (_matcher.CanMatch(ficha.Tail, rigth)) moves.Add(new Move<T>(ficha.Tail, ficha, rigth));
-                _playersNextMove[node].Add(player, moves);
             }
+            
+            _playersNextMove[node].Add(player, moves);
+
         }
     }
 
@@ -133,9 +135,18 @@ public class PlayInfo<T>
         Update(move.Rigth);
     }
 
-    public void FirstPlay(Ficha<T> ficha)
+    public void DeleteMove(Move<T> move, Player<T> player)
+    {
+        _hands[player].Remove(move.Ficha);
+    }
+
+    public void FirstPlay(Ficha<T> ficha, Player<T> player)
     {
         _board = new Board<T>(ficha);
+        DeleteMove(new Move<T>(ficha.Head, ficha, true), player);
+        _playersNextMove.Add(_board!.Right, new Dictionary<Player<T>, List<Move<T>>>());
+        _playersNextMove.Add(_board!.Left, new Dictionary<Player<T>, List<Move<T>>>());
+        SetMatcher();
         Update(true);
         Update(false);
     }

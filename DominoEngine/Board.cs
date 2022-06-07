@@ -43,20 +43,9 @@ public class Board<T> : IEnumerable<(int turn, bool right, T toParent, T toChild
     public Board(Ficha<T> salida)
     { //rename
         Salida = new StartNode<T>(salida.Head, salida.Tail);
-        _left = Salida;
-        _right = Salida;
+        _left = new Node<T>(Salida.ToParent, Salida.ToChild, 0, Salida);
+        _right = new Node<T>(Salida.ToChild, Salida.ToParent, 0, Salida);
     }
-
-    // public Node<T> this[int index]
-    // {
-    //     get
-    //     {
-    //         foreach (var item in this.GetEnumerator)
-    //         {
-    //             if (item.turn == index) 
-    //         }
-    //     }
-    // }
 
     public bool AddLeft(T matching, T other, int turn)
     {
@@ -153,11 +142,13 @@ public class RandomPlayer<T> : Player<T>
     public RandomPlayer(Hand<T> hand) : base(hand) {}
     public override Move<T> Play(IList<Move<T>> moves)
     {
-        throw new NotImplementedException();
+        Random r = new Random();
+        return moves[r.Next(moves.Count)];
     }
 
     public override Ficha<T> Play()
     {
-        throw new NotImplementedException();
+        Random r = new Random();
+        return Hand[r.Next(Hand.Count)];
     }
 }

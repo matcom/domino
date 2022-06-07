@@ -2,6 +2,10 @@ namespace DominoEngine;
 
 public class Game
 {
+    public Game()
+    {
+        LetsPlay();
+    }
     public void LetsPlay()
     {
         List<Hand<int>> hands = new List<Hand<int>>();

@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net6.0": {}
+    "net6.0": {
+      "Tester/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/Tester.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Tester.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Tester/1.0.0": {
+      "type": "project",
+      "path": "../Tester/Tester.csproj",
+      "msbuildProject": "../Tester/Tester.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net6.0": []
+    "net6.0": [
+      "Tester >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Alex\\.nuget\\packages\\": {}
@@ -13,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Alex\\Proyectos Pro\\Domino\\domino\\DominoEngine\\DominoEngine.csproj",
+      "projectUniqueName": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\DominoEngine\\DominoEngine.csproj",
       "projectName": "DominoEngine",
-      "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\domino\\DominoEngine\\DominoEngine.csproj",
+      "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\DominoEngine\\DominoEngine.csproj",
       "packagesPath": "C:\\Users\\Alex\\.nuget\\packages\\",
-      "outputPath": "C:\\Alex\\Proyectos Pro\\Domino\\domino\\DominoEngine\\obj\\",
+      "outputPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\DominoEngine\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Alex\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -31,7 +50,11 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Tester\\Tester.csproj": {
+              "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Tester\\Tester.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
