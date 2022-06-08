@@ -18,11 +18,15 @@ public class Judge<T> {
         Ficha<T> salida = firstplayer.Play();
         _playInfo.FirstPlay(salida, firstplayer);
 
-        while (NotFinished() || _playInfo.CountMoves() != 0)
+        while (NotFinished() && _playInfo.CountMoves() != 0)
         {
             Play();
         }
+
+        CheckPlay();
     }
+
+    public void CheckPlay(){}
 
     public void Play()
     {
@@ -39,7 +43,7 @@ public class Judge<T> {
         
         while (!_playInfo.ValidMove(move, actual_player)) move = actual_player.Play(moves);
 
-        _playInfo.AddNode(move);
+        _playInfo.AddNode(move, actual_player);
         _playInfo.AddTurn(actual_player);
     }
 
@@ -91,6 +95,11 @@ public class PlayInfo<T>
     public void Update(bool rigth)
     {
         Node<T> node = (rigth)? _board!.Right : _board!.Left;
+        if (node.Turn != 0)
+        {
+            _playersNextMove.Remove(node.Parent!);
+            _playersNextMove.Add(node, new Dictionary<Player<T>, List<Move<T>>>());
+        }
 
         foreach (var player in _hands.Keys)
         {
@@ -123,15 +132,17 @@ public class PlayInfo<T>
         return moves;
     }
 
-    public void AddNode(Move<T> move)
+    public void AddNode(Move<T> move, Player<T> player)
     {
+        AddTurn(player);
+
         if (move.Rigth)
         {
             _board!.AddRight(move.Head, move.Ficha.Other(move.Head), _turn);
-            return;
         }
-        _board!.AddLeft(move.Head, move.Ficha.Other(move.Head), _turn);
+        else _board!.AddLeft(move.Head, move.Ficha.Other(move.Head), _turn);
 
+        DeleteMove(move, player);
         Update(move.Rigth);
     }
 
