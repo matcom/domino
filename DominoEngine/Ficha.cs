@@ -11,7 +11,30 @@ public record Ficha<T>(T Head, T Tail)
     }
 }
 
-public record Move<T>(T Head, Ficha<T> Ficha, bool Rigth);
+public record Move<T>(T Head, Ficha<T> Ficha, bool Rigth) : IMove<T>
+{
+    public override string ToString()
+    {
+        if (Rigth) return $"{Ficha.Head!.ToString()} | {Ficha.Tail!.ToString()} for rigth";
+        else return $"{Ficha.Head!.ToString()} | {Ficha.Tail!.ToString()} for left";
+    }
+}
+
+public record Salida<T>(T Head, T Tail) : IMove<T>
+{
+    public override string ToString()
+    {
+        return $"{Head!.ToString()} | {Tail!.ToString()} salida";
+    }
+}
+
+public record Check<T> : IMove<T>
+{
+    public override string ToString()
+    {
+        return "pass";
+    }
+}
 
 public class Hand<T> : IList<Ficha<T>>, ICloneable<Hand<T>>
 {

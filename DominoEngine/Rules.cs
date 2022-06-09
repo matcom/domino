@@ -62,7 +62,7 @@ public class Matcher<T> : IMatcher<T>
         _rigth = board.Right;
     }
 
-    public virtual bool CanMatch(T toParent, bool right) => toParent!.Equals(right? _rigth.ToChild : _left.ToChild);
+    public virtual bool CanMatch(T toParent, bool right) => toParent!.Equals(right? _board.Right.ToChild : _board.Left.ToChild);
 }
 
 public class ClassicMatcher : Matcher<int>

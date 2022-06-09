@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Tester\\Tester.csproj": {}
+    "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\tester\\Tester.csproj": {}
   },
   "projects": {
     "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\DominoEngine\\DominoEngine.csproj": {
@@ -56,14 +56,14 @@
         }
       }
     },
-    "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Tester\\Tester.csproj": {
+    "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\tester\\Tester.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Tester\\Tester.csproj",
+        "projectUniqueName": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\tester\\Tester.csproj",
         "projectName": "Tester",
-        "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Tester\\Tester.csproj",
+        "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\tester\\Tester.csproj",
         "packagesPath": "C:\\Users\\Alex\\.nuget\\packages\\",
-        "outputPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Tester\\obj\\",
+        "outputPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\tester\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Alex\\AppData\\Roaming\\NuGet\\NuGet.Config"

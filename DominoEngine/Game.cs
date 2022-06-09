@@ -13,8 +13,8 @@ public class Game
         {
             hands.Add(new Hand<int>());
         }
-        ClassicGenerator generator = new ClassicGenerator(10);
-        ClassicDealer dealer = new ClassicDealer(10, hands, generator.Generate());
+        ClassicGenerator generator = new ClassicGenerator(7);
+        ClassicDealer dealer = new ClassicDealer(7, hands, generator.Generate());
         List<Player<int>> players = new List<Player<int>>();
         foreach (var item in hands)
         {
@@ -27,7 +27,7 @@ public class Game
             Hands.Add(item, item.Hand.Clone());
         }
         IFinisher<int> finisher = new ClassicFinisher(Hands);
-        PlayInfo<int> playInfo = new PlayInfo<int>(Hands, new List<Player<int>>());
+        PlayInfo<int> playInfo = new PlayInfo<int>(Hands);
         Rules<int> rules = new Rules<int>(turner, finisher);
         Judge<int> judge = new Judge<int>(playInfo, rules);
         judge.Play();

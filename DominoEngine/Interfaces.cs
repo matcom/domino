@@ -34,3 +34,5 @@ public interface ICloneable<T> : ICloneable
 {
     public new T Clone();
 }
+
+public interface IMove<T> {}
