@@ -1,6 +1,6 @@
 namespace DominoEngine;
 
-public class Rules<T>
+public class Rules<T> : IMatcher<T>, ITurner<T>, IScorer<T>, IFinisher<T>
 {
     ITurner<T> _turner;
     // IScorer<T> _scorer;
@@ -12,9 +12,31 @@ public class Rules<T>
         // _scorer = scorer;
         _finisher = finisher;
     }
-    
-    public Player<T> NexTurn() => _turner.NextTurn();
-    public bool IsEnd() => _finisher.IsEnd();
+
+    public bool CanMatch(T toParent, bool rigth)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool IsEnd()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Player<T> NextTurn()
+    {
+        throw new NotImplementedException();
+    }
+
+    public double Scorer()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetBoard(Board<T> board)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public abstract class Finisher<T> : IFinisher<T>
@@ -49,27 +71,19 @@ public class ClassicFinisher : Finisher<int>
     }
 }
 
-public class Matcher<T> : IMatcher<T>
+public abstract class Matcher<T> : IMatcher<T>
 {
-    protected Board<T> _board;
-    protected Node<T> _left;
-    protected Node<T> _rigth;
+    protected Board<T>? _board;
 
-    public Matcher(Board<T> board)
-    {
-        _board = board;
-        _left = board.Left;
-        _rigth = board.Right;
-    }
+    public abstract bool CanMatch(T toParent, bool right);
 
-    public virtual bool CanMatch(T toParent, bool right) => toParent!.Equals(right? _board.Right.ToChild : _board.Left.ToChild);
+    public void SetBoard(Board<T> board) => _board = board;
 }
 
 public class ClassicMatcher : Matcher<int>
 {
-    public ClassicMatcher(Board<int> board) : base(board) {}
-
-    public override bool CanMatch(int toParent, bool right) => toParent == (right? _rigth.ToChild : _left.ToChild);
+    public override bool CanMatch(int toParent, bool right) => 
+                                    toParent == (right? _board!.Right.ToChild : _board!.Left.ToChild);
 }
 
 public abstract class Turner<T> : ITurner<T>

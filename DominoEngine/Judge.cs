@@ -15,7 +15,7 @@ public class Judge<T>
 
     void Init()
     {
-        Player<T> firstplayer = _rules.NexTurn();
+        Player<T> firstplayer = _rules.NextTurn();
         Ficha<T> salida = firstplayer.Play();
         _playInfo.FirstPlay(salida, firstplayer);
 
@@ -38,8 +38,7 @@ public class Judge<T>
 
     public void Play()
     {
-        Player<T> actual_player = _rules.NexTurn();
-        // List<Move<T>> moves = _playInfo.PlayerNextMove(actual_player);
+        Player<T> actual_player = _rules.NextTurn();
         List<Move<T>> moves = _playInfo.PlayerMove(actual_player);
 
         if (moves.Count == 0)
@@ -71,9 +70,10 @@ public class PlayInfo<T>
     private List<Ficha<T>>? _inGame;
     List<Move<T>>? _possibles;
 
-    public PlayInfo(Dictionary<Player<T>, Hand<T>> hands)
+    public PlayInfo(Dictionary<Player<T>, Hand<T>> hands, IMatcher<T> matcher)
     {
         _hands = hands;
+        _matcher = matcher;
         _turns = new List<(Player<T> player, IMove<T> move)>();
         InGame();
     }
@@ -93,22 +93,7 @@ public class PlayInfo<T>
         }
     }
 
-    public void SetMatcher()
-    {
-        _matcher = new Matcher<T>(_board!);
-    }
-
     public List<(Player<T> player, IMove<T> move)> GetTurns() => _turns;
-
-    // public int CountMoves()
-    // {
-    //     int count = 0;
-
-    //     foreach (var moves in _playersNextMove[_board!.Right].Values) count += moves.Count;
-    //     foreach (var moves in _playersNextMove[_board!.Left].Values) count += moves.Count;
-
-    //     return count;
-    // }
 
     public void AddTurn(Player<T> player, IMove<T> move)
     {
@@ -134,46 +119,6 @@ public class PlayInfo<T>
     }
 
     void Delete(Ficha<T> ficha) => _inGame!.Remove(ficha);
-
-    // public void Update(bool rigth)
-    // {
-    //     Node<T> node = (rigth) ? _board!.Right : _board!.Left;
-    //     if (node.Turn != 0)
-    //     {
-    //         _playersNextMove.Remove(node.Parent!);
-    //         _playersNextMove.Add(node, new Dictionary<Player<T>, List<Move<T>>>());
-    //     }
-
-    //     foreach (var player in _hands.Keys)
-    //     {
-    //         List<Move<T>> moves = new List<Move<T>>();
-
-    //         foreach (var ficha in _hands[player])
-    //         {
-    //             if (_matcher!.CanMatch(ficha.Head, rigth)) moves.Add(new Move<T>(ficha.Head, ficha, rigth));
-    //             if (_matcher.CanMatch(ficha.Tail, rigth)) moves.Add(new Move<T>(ficha.Tail, ficha, rigth));
-    //         }
-
-    //         _playersNextMove[node].Add(player, moves);
-
-    //     }
-    // }
-
-    // public List<Move<T>> PlayerNextMove(Player<T> player)
-    // {
-    //     List<Move<T>> moves = new List<Move<T>>();
-
-    //     foreach (var move in _playersNextMove[_board!.Right][player])
-    //     {
-    //         moves.Add(move);
-    //     }
-    //     foreach (var move in _playersNextMove[_board!.Left][player])
-    //     {
-    //         moves.Add(move);
-    //     }
-
-    //     return moves;
-    // }
 
     public List<Move<T>> PlayerMove(Player<T> player)
     {
@@ -202,7 +147,6 @@ public class PlayInfo<T>
         DeleteMove(move, player);
         Delete(move.Ficha);
         Update();
-        // Update(move.Rigth);
     }
 
     public void DeleteMove(Move<T> move, Player<T> player)
@@ -216,11 +160,7 @@ public class PlayInfo<T>
         DeleteMove(new Move<T>(ficha.Head, ficha, true), player);
         Delete(ficha);
         AddTurn(player, new Salida<T>(ficha.Head, ficha.Tail));
-        // _playersNextMove.Add(_board!.Right, new Dictionary<Player<T>, List<Move<T>>>());
-        // _playersNextMove.Add(_board!.Left, new Dictionary<Player<T>, List<Move<T>>>());
-        SetMatcher();
+        _matcher!.SetBoard(_board);
         Update();
-        // Update(true);
-        // Update(false);
     }
 }
