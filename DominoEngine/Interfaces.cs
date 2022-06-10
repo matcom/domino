@@ -12,27 +12,29 @@ public interface IDealer<T>
 
 public interface IMatcher<T>
 {
-    public bool CanMatch(T toParent, bool rigth);
+    void SetPartida(Partida<T> partida);
+    public bool CanMatch(Move<T> move);
 }
 
 public interface ITurner<T>
 {
-    public Player<T> NextTurn();
+    void SetPartida(Partida<T> partida);
+    public IEnumerable<Player<T>> NextTurn();
 }
 
 public interface IFinisher<T>
 {
-    public bool IsEnd();
+    void SetPartida(Partida<T> partida);
+    public bool GameOver();
 }
 
 public interface IScorer<T>
 {
-    public double Scorer();
+    void SetPartida(Partida<T> partida);
+    public double Scorer(Move<T> move);
 }
 
 public interface ICloneable<T> : ICloneable
 {
     public new T Clone();
 }
-
-public interface IMove<T> {}

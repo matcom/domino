@@ -1,6 +1,6 @@
 namespace DominoEngine;
 
-public class Rules<T> : IMatcher<T>, ITurner<T>, IScorer<T>, IFinisher<T>
+public class Rules<T>
 {
     ITurner<T> _turner;
     // IScorer<T> _scorer;
@@ -12,78 +12,73 @@ public class Rules<T> : IMatcher<T>, ITurner<T>, IScorer<T>, IFinisher<T>
         // _scorer = scorer;
         _finisher = finisher;
     }
-
-    public bool CanMatch(T toParent, bool rigth)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool IsEnd()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Player<T> NextTurn()
-    {
-        throw new NotImplementedException();
-    }
-
-    public double Scorer()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void SetBoard(Board<T> board)
-    {
-        throw new NotImplementedException();
-    }
 }
-
 public abstract class Finisher<T> : IFinisher<T>
 {
-    protected Dictionary<Player<T>, Hand<T>> _hands;
-    public Finisher(Dictionary<Player<T>, Hand<T>> hands)
-    { 
-        _hands = hands;
+    private Partida<T>? _partida;
+
+    public Finisher() {}
+
+    public abstract bool GameOver();
+
+    public void SetPartida(Partida<T> partida)
+    {
+        _partida = partida;
     }
-    public abstract bool IsEnd();
 }
 
 public class ClassicFinisher : Finisher<int>
 {
-    public ClassicFinisher(Dictionary<Player<int>, Hand<int>> hands) : base(hands)
+    public override bool GameOver()
     {
+        throw new NotImplementedException();
+    }
+}
+
+public abstract class DominoMatcher<T> : IMatcher<T>
+{
+    protected Partida<T>? _partida;
+    protected List<int>? _validsTurns;
+
+    public DominoMatcher() {}
+
+    public abstract bool CanMatch(Move<T> move);
+
+    public void SetPartida(Partida<T> partida)
+    {
+        _partida = partida;
     }
 
-    public override bool IsEnd()
-    {
-        return PlayerWin();
-    }
+    public abstract void ValidsTurn();
+}
 
-    private bool PlayerWin()
+public class ClassicMatcher : DominoMatcher<int>
+{
+    public override bool CanMatch(Move<int> move)
     {
-        foreach (var item in _hands.Values)
+        ValidsTurn();
+
+        if (move is BaseMove<int> mov && _validsTurns!.Contains(mov.Turn))
         {
-            if (item.Count == 0) return true;
+            return mov.Head == _partida!._board[mov.Turn].
         }
-
-        return false;
     }
-}
 
-public abstract class Matcher<T> : IMatcher<T>
-{
-    protected Board<T>? _board;
+    public override void ValidsTurn()
+    {
+        _validsTurns = new List<int>();
+        _validsTurns.Add(-1);
+        _validsTurns.Add(0);
 
-    public abstract bool CanMatch(T toParent, bool right);
-
-    public void SetBoard(Board<T> board) => _board = board;
-}
-
-public class ClassicMatcher : Matcher<int>
-{
-    public override bool CanMatch(int toParent, bool right) => 
-                                    toParent == (right? _board!.Right.ToChild : _board!.Left.ToChild);
+        for (int i = 0; i < _partida!._board.Count; i++)
+        {
+            if (_partida!._board[i] is BaseMove<int> move)
+            {
+                _validsTurns.Remove(move.Turn);
+                _validsTurns.Add(i);
+            }
+        }
+    }
 }
 
 public abstract class Turner<T> : ITurner<T>

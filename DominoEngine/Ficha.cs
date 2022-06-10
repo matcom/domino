@@ -3,38 +3,35 @@ using System.Collections;
 namespace DominoEngine;
 
 
-public record Ficha<T>(T Head, T Tail)
+public class Ficha<T>
 {
+    public T Head;
+    public T Tail;
+
+    public Ficha(T head, T tail)
+    {
+        Head = head;
+        Tail = tail;
+    }
+
+    public bool Equals(Ficha<T> ficha)
+    {
+        return (Head!.Equals(ficha.Head) && Tail!.Equals(ficha.Tail)) || (Head!.Equals(ficha.Tail) && Tail!.Equals(ficha.Head));
+    }
+
     public T Other(T other)
     {
-        return (other!.Equals(Head))? Tail : Head;
+        return (other!.Equals(Head)) ? Tail : Head;
     }
 }
 
-public record Move<T>(T Head, Ficha<T> Ficha, bool Rigth) : IMove<T>
-{
-    public override string ToString()
-    {
-        if (Rigth) return $"{Ficha.Head!.ToString()} | {Ficha.Tail!.ToString()} for rigth";
-        else return $"{Ficha.Head!.ToString()} | {Ficha.Tail!.ToString()} for left";
-    }
-}
+public record class Move<T> { }
 
-public record Salida<T>(T Head, T Tail) : IMove<T>
-{
-    public override string ToString()
-    {
-        return $"{Head!.ToString()} | {Tail!.ToString()} salida";
-    }
-}
+public record BaseMove<T>(T Head, T Tail, int PlayerId, int Turn) : Move<T> { }
 
-public record Check<T> : IMove<T>
-{
-    public override string ToString()
-    {
-        return "pass";
-    }
-}
+public record Salida<T>(T Head, T Tail, int PlayerId, int Turn = -2) : Move<T> { }
+
+public record Check<T>(int PlayerId) : Move<T> { }
 
 public class Hand<T> : IList<Ficha<T>>, ICloneable<Hand<T>>
 {

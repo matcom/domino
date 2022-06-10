@@ -60,6 +60,18 @@ public class Judge<T>
     }
 }
 
+public class Partida<T>
+{
+    public Board<T> _board;
+    private Dictionary<Player<T>, Hand<T>> _hands;
+
+    public Partida(Dictionary<Player<T>, Hand<T>> hands)
+    {
+        _board = new Board<T>();
+        _hands = hands;
+    }
+}
+
 public class PlayInfo<T>
 {
     public Board<T>? _board;
