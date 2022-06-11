@@ -1,15 +1,16 @@
 using Domino.Tokens;
 using Domino.Boards;
 using Domino.Moves;
+using Domino.Utils;
 
 namespace Domino.Strategies;
 
-public interface IStrategy<TMove> where TMove : BaseMove {
-    public TMove MakeMove(IEnumerable<IToken> tokens, BaseBoard board);
+public interface IStrategy {
+    public BaseMove MakeMove(IEnumerable<BaseMove> moves, BaseBoard board);
 }
 
-public class GreedyStrategy<TMove> : IStrategy<TMove> where TMove : BaseMove {
-    public TMove MakeMove(IEnumerable<IToken> tokens, BaseBoard board) {
-        throw new NotImplementedException();
+public class GreedyStrategy : IStrategy {
+    public BaseMove MakeMove(IEnumerable<BaseMove> moves, BaseBoard board) {
+        return moves.OrderBy(move => move.Token.Value()).First();
     }
 }

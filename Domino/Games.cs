@@ -7,7 +7,7 @@ using Domino.Moves;
 
 namespace Domino.Games;
 
-public delegate IDictionary<BasePlayer<BaseMove>, IEnumerable<IToken>> DealTokens(IEnumerable<IToken> tokens, IEnumerable<BasePlayer<BaseMove>> players);
+public delegate IDictionary<BasePlayer, IEnumerable<IToken>> DealTokens(IEnumerable<IToken> tokens, IEnumerable<BasePlayer> players);
 
 public enum GameState {
     LOADING,
@@ -18,8 +18,8 @@ public enum GameState {
 public abstract class BaseGame {
     public GameState CurrentState { get; protected set; }
     // Players
-    public IEnumerable<BasePlayer<BaseMove>> Players { get; }
-    public IDictionary<BasePlayer<BaseMove>, IEnumerable<IToken>> PlayerTokens { get; protected set; }
+    public IEnumerable<BasePlayer> Players { get; }
+    public IDictionary<BasePlayer, IEnumerable<IToken>> PlayerTokens { get; protected set; }
     // Board
     public BaseBoard Board { get; }
     // Rules
@@ -27,7 +27,7 @@ public abstract class BaseGame {
     protected List<IToken> tokens = new List<IToken>();
 
     public BaseGame(
-        IEnumerable<BasePlayer<BaseMove>> players, 
+        IEnumerable<BasePlayer> players, 
         ITokenRule<IToken> tokenRules,
         BaseBoard board
     ) {
@@ -35,12 +35,12 @@ public abstract class BaseGame {
         this.Players = players;
         this.Board = board;
         this.TokenRules = tokenRules;
-        this.PlayerTokens = new Dictionary<BasePlayer<BaseMove>, IEnumerable<IToken>>();
+        this.PlayerTokens = new Dictionary<BasePlayer, IEnumerable<IToken>>();
     }
 
-    public abstract IEnumerable<IToken>  AvailableMoves();
+    public abstract IEnumerable<BaseMove>  AvailableMoves();
     public abstract bool WinAchieved();
-    public abstract IEnumerable<BasePlayer<BaseMove>> GetWinners();
+    public abstract IEnumerable<BasePlayer> GetWinners();
     public abstract void Start();
 }
 
@@ -52,11 +52,11 @@ public interface ITurnableGame<TPlayer> {
 }
 
 
-public class DominoGame : BaseGame, ITurnableGame<BasePlayer<BaseMove>> {
-    public BasePlayer<BaseMove> CurrentPlayer { get; protected set; }
+public class DominoGame : BaseGame, ITurnableGame<BasePlayer> {
+    public BasePlayer CurrentPlayer { get; protected set; }
 
     public DominoGame(
-        IEnumerable<BasePlayer<BaseMove>> players,
+        IEnumerable<BasePlayer> players,
         ITokenRule<IToken> tokenRules,
         DominoBoard board,
         DealTokens tokenDealer,
@@ -77,24 +77,31 @@ public class DominoGame : BaseGame, ITurnableGame<BasePlayer<BaseMove>> {
         this.Start();
     }
 
-    public BasePlayer<BaseMove> NextPlayer() {
+    public BasePlayer NextPlayer() {
         throw new NotImplementedException();
     }
-    public BasePlayer<BaseMove> PreviousPlayer() {
+    public BasePlayer PreviousPlayer() {
         throw new NotImplementedException();
     }
-    public override IEnumerable<IToken> AvailableMoves()
+    public override IEnumerable<BaseMove> AvailableMoves()
     {
-        return this.PlayerTokens[this.CurrentPlayer]
-            .Where(
-                token => this.TokenRules.IsValid(token, this.Board.Table)
-            );
+        List<BaseMove> moves = new List<BaseMove>();
+
+        foreach (IToken token in this.PlayerTokens[this.CurrentPlayer]) {
+            foreach (GraphLink<IToken> link in this.Board.Table.GetLinksWithFreeNodes()) {
+                BaseMove move = new BaseMove(this.CurrentPlayer, token, link.To);
+                if (this.TokenRules.IsValid(move, this.Board.Table))
+                    moves.Add(move);
+            }
+        }
+
+        return moves;
     }
     public override bool WinAchieved()
     {
         throw new NotImplementedException();
     }
-    public override IEnumerable<BasePlayer<BaseMove>> GetWinners()
+    public override IEnumerable<BasePlayer> GetWinners()
     {
         throw new NotImplementedException();
     }

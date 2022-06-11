@@ -4,19 +4,19 @@ using Domino.Strategies;
 
 namespace Domino.Players;
 
-public abstract class BasePlayer<TMove> where TMove : BaseMove {
+public abstract class BasePlayer {
     // Identifier
     public string Name { get; }
     // Strategy
-    public IStrategy<TMove> Strategy { get; }
+    public IStrategy Strategy { get; }
 
-    public BasePlayer(string name, IStrategy<TMove> strategy) {
+    public BasePlayer(string name, IStrategy strategy) {
         this.Name = name;
         this.Strategy = strategy;
     }
 }
 
-public class GreedyPlayer<TMove> : BasePlayer<TMove> where TMove : BaseMove {
-    public GreedyPlayer(int index, GreedyStrategy<TMove> strategy) : 
+public class GreedyPlayer : BasePlayer {
+    public GreedyPlayer(int index, GreedyStrategy strategy) : 
         base($"Greedy Player #{index}", strategy) {}
 }
