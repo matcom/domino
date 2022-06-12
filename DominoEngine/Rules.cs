@@ -13,11 +13,32 @@ public class Rules<T>
         _finisher = finisher;
     }
 }
-public abstract class Finisher<T> : IFinisher<T>
-{
-    private Partida<T>? _partida;
 
-    public Finisher() {}
+public abstract class DominoScorer<T> : IScorer<T>
+{
+    protected Partida<T>? _partida;
+
+    public abstract double Scorer(Move<T> move);
+
+    public void SetPartida(Partida<T> partida)
+    {
+        _partida = partida;
+    }
+}
+
+public class ClassicScorer : DominoScorer<int>
+{
+    public ClassicScorer() { }
+
+    public override double Scorer(Move<int> move)
+    {
+        return move.Head + move.Tail;
+    }
+}
+
+public abstract class DominoFinisher<T> : IFinisher<T>
+{
+    protected Partida<T>? _partida;
 
     public abstract bool GameOver();
 
@@ -27,11 +48,34 @@ public abstract class Finisher<T> : IFinisher<T>
     }
 }
 
-public class ClassicFinisher : Finisher<int>
+public class ClassicFinisher : DominoFinisher<int>
 {
     public override bool GameOver()
     {
-        throw new NotImplementedException();
+        return AllCheck() || PlayerEnd();
+    }
+
+    public bool AllCheck()
+    {
+        bool all_checks = true;
+
+        foreach (var player in _partida!.Players())
+        {
+            List<IMove<int>> moves = _partida.PlayersMoves(player);
+            if (!(moves[moves.Count-1] is Check<int>)) all_checks = false;
+        }
+
+        return all_checks;
+    }
+
+    public bool PlayerEnd()
+    {
+        foreach (var player in _partida!.Players())
+        {
+            if (_partida.Hands[player].Count == 0) return true;
+        }
+
+        return false;
     }
 }
 
@@ -40,13 +84,12 @@ public abstract class DominoMatcher<T> : IMatcher<T>
     protected Partida<T>? _partida;
     protected List<int>? _validsTurns;
 
-    public DominoMatcher() {}
-
-    public abstract bool CanMatch(Move<T> move);
+    public abstract bool CanMatch(IMove<T> move);
 
     public void SetPartida(Partida<T> partida)
     {
         _partida = partida;
+        _validsTurns = new List<int>();
     }
 
     public abstract void ValidsTurn();
@@ -54,14 +97,16 @@ public abstract class DominoMatcher<T> : IMatcher<T>
 
 public class ClassicMatcher : DominoMatcher<int>
 {
-    public override bool CanMatch(Move<int> move)
+    public override bool CanMatch(IMove<int> move)
     {
-        ValidsTurn();
-
-        if (move is BaseMove<int> mov && _validsTurns!.Contains(mov.Turn))
+        if (_validsTurns!.Count == 0) ValidsTurn();
+        
+        if (move is BaseMove<int> mov)
         {
-            return mov.Head == _partida!._board[mov.Turn].
+            if (!_validsTurns!.Contains(mov.Turn)) return false;
+            return (mov.Turn == -1)? mov.Head == _partida!.Board[0].Head : mov.Head == _partida!.Board[mov.Turn].Tail;
         }
+        else return true;
     }
 
     public override void ValidsTurn()
@@ -70,9 +115,9 @@ public class ClassicMatcher : DominoMatcher<int>
         _validsTurns.Add(-1);
         _validsTurns.Add(0);
 
-        for (int i = 0; i < _partida!._board.Count; i++)
+        for (int i = 0; i < _partida!.Board.Count; i++)
         {
-            if (_partida!._board[i] is BaseMove<int> move)
+            if (_partida!.Board[i] is BaseMove<int> move)
             {
                 _validsTurns.Remove(move.Turn);
                 _validsTurns.Add(i);
@@ -81,27 +126,34 @@ public class ClassicMatcher : DominoMatcher<int>
     }
 }
 
-public abstract class Turner<T> : ITurner<T>
+public abstract class DominoTurner<T> : ITurner<T>
 {
-    protected Player<T>[] _players;
-    protected int _currplayer = 0;
+    protected Partida<T>? _partida;
 
-    public Turner(List<Player<T>> players)
+    public void SetPartida(Partida<T> partida)
     {
-        _players = players.ToArray();
+        _partida = partida;
     }
-    public abstract Player<T> NextTurn();
+
+    public abstract IEnumerable<Player<T>> NextTurn();
 }
 
-public class ClassicTurner : Turner<int>
+public class ClassicTurner : DominoTurner<int>
 {
-    public ClassicTurner(List<Player<int>> players) : base(players) {}
+    public ClassicTurner() { }
 
-    public override Player<int> NextTurn()
+    public override IEnumerable<Player<int>> NextTurn()
     {
-        _currplayer = (_currplayer) % _players.Length;
-        return _players[_currplayer++];
+        while (true)
+        {
+            foreach (var player in _partida!.Players())
+            {
+                yield return player;
+            }
+        }
     }
+
+
 }
 
 public abstract class Dealer<T> : IDealer<T>

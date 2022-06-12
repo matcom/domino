@@ -25,13 +25,37 @@ public class Ficha<T>
     }
 }
 
-public record class Move<T> { }
+public class Move<T> : IMove<T>
+{
+    T _head;
+    T _tail;
+    int _playerId;
 
-public record BaseMove<T>(T Head, T Tail, int PlayerId, int Turn) : Move<T> { }
+    public Move(T Head, T Tail, int PlayerId)
+    {
+        _head = Head;
+        _tail = Tail;
+        _playerId = PlayerId;
+    }
 
-public record Salida<T>(T Head, T Tail, int PlayerId, int Turn = -2) : Move<T> { }
+    public T Head => _head;
+    public T Tail => _tail;
+    public int PlayerId => _playerId;
+}
 
-public record Check<T>(int PlayerId) : Move<T> { }
+public class BaseMove<T> : Move<T>
+{
+    int _turn;
+
+    public BaseMove(T Head, T Tail, int PlayerId, int Turn) : base(Head, Tail, PlayerId) 
+    {
+        _turn = Turn;
+    }
+
+    public int Turn => _turn;
+}
+
+public record Check<T>(int PlayerId) : IMove<T>;
 
 public class Hand<T> : IList<Ficha<T>>, ICloneable<Hand<T>>
 {

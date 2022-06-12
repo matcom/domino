@@ -13,7 +13,7 @@ public interface IDealer<T>
 public interface IMatcher<T>
 {
     void SetPartida(Partida<T> partida);
-    public bool CanMatch(Move<T> move);
+    public bool CanMatch(IMove<T> move);
 }
 
 public interface ITurner<T>
@@ -38,3 +38,5 @@ public interface ICloneable<T> : ICloneable
 {
     public new T Clone();
 }
+
+public interface IMove<T> { }
