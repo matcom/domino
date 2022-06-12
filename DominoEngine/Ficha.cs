@@ -25,39 +25,13 @@ public class Ficha<T>
     }
 }
 
-public class Move<T> : IMove<T>
-{
-    T _head;
-    T _tail;
-    int _playerId;
+public record Move<T>(T Head, T Tail, int PlayerId, bool Check = false);
 
-    public Move(T Head, T Tail, int PlayerId)
-    {
-        _head = Head;
-        _tail = Tail;
-        _playerId = PlayerId;
-    }
+public record BaseMove<T>(T Head, T Tail, int PlayerId, int Turn, bool Check = false) : Move<T>(Head, Tail, PlayerId, Check);
 
-    public T Head => _head;
-    public T Tail => _tail;
-    public int PlayerId => _playerId;
-}
+public record Check<T>(T Head, T Tail, int PlayerId, bool Check = true) : Move<T>(Head, Tail, PlayerId, Check);
 
-public class BaseMove<T> : Move<T>
-{
-    int _turn;
-
-    public BaseMove(T Head, T Tail, int PlayerId, int Turn) : base(Head, Tail, PlayerId) 
-    {
-        _turn = Turn;
-    }
-
-    public int Turn => _turn;
-}
-
-public record Check<T>(int PlayerId) : IMove<T>;
-
-public class Hand<T> : IList<Ficha<T>>, ICloneable<Hand<T>>
+public class Hand<T> : ICollection<Ficha<T>>, ICloneable<Hand<T>>
 {
     List<Ficha<T>> fichas;
     public Hand(List<Ficha<T>> Fichas = null!)
@@ -65,11 +39,9 @@ public class Hand<T> : IList<Ficha<T>>, ICloneable<Hand<T>>
         fichas = (Fichas is null) ? new List<Ficha<T>>() : Fichas;
     }
 
-    public Ficha<T> this[int index] { get => fichas[index]; set => fichas[index] = value; }
-
     public int Count => fichas.Count;
 
-    public bool IsReadOnly => throw new NotImplementedException();
+    public bool IsReadOnly => false;
 
     public void Add(Ficha<T> item) => fichas.Add(item);
 
@@ -101,19 +73,10 @@ public class Hand<T> : IList<Ficha<T>>, ICloneable<Hand<T>>
         return GetEnumerator();
     }
 
-    public int IndexOf(Ficha<T> item) => fichas.IndexOf(item);
-
-    public void Insert(int index, Ficha<T> item)
-    {
-        throw new NotImplementedException();
-    }
-
     public bool Remove(Ficha<T> item) => fichas.Remove(item);
-
-    public void RemoveAt(int index) => fichas.RemoveAt(index);
 
     object ICloneable.Clone()
     {
-        throw new NotImplementedException();
+        return Clone();
     }
 }
