@@ -25,11 +25,11 @@ public class Ficha<T>
     }
 }
 
-public record Move<T>(T Head, T Tail, int PlayerId, bool Check = false);
+public record Move<T>(T Head, T Tail, int PlayerId, bool Check = false, int Turn = -2);
 
-public record BaseMove<T>(T Head, T Tail, int PlayerId, int Turn, bool Check = false) : Move<T>(Head, Tail, PlayerId, Check);
+// public record BaseMove<T>(T Head, T Tail, int PlayerId, int Turn, bool Check = false) : Move<T>(Head, Tail, PlayerId, Check);
 
-public record Check<T>(T Head, T Tail, int PlayerId, bool Check = true) : Move<T>(Head, Tail, PlayerId, Check);
+// public record Check<T>(T Head, T Tail, int PlayerId, bool Check = true) : Move<T>(Head, Tail, PlayerId, Check);
 
 public class Hand<T> : ICollection<Ficha<T>>, ICloneable<Hand<T>>
 {
