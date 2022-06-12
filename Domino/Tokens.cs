@@ -28,7 +28,7 @@ public interface IToken {
     public IEnumerable<double> Values();
 }
 
-public class DominoToken : IToken, IPlaceableToken {
+public class DominoToken : IToken {
     readonly List<double> values;
     public bool IsMultiValue { get { return true; } }
 
@@ -48,10 +48,6 @@ public class DominoToken : IToken, IPlaceableToken {
 
         return value;
     }
-    public void Place() {
-        throw new NotImplementedException();
-    }
-
     public bool IsDouble() {
         return this.values[0] == this.values[1];
     }
