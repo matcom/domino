@@ -14,5 +14,3 @@ public class Board<T>: IReadOnlyList<Move<T>> {
 
 	public void Add(Move<T> item) => _moves.Add(item);
 }
-
-public record Move<T>(T Head, T Tail, int PlayerId, int Turn);

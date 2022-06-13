@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net6.0": {}
+    "net6.0": {
+      "Players/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/Players.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Players.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Players/1.0.0": {
+      "type": "project",
+      "path": "../Players/Players.csproj",
+      "msbuildProject": "../Players/Players.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net6.0": []
+    "net6.0": [
+      "Players >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\omriv\\.nuget\\packages\\": {}
@@ -31,7 +50,11 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\Escuela\\Programación\\domino\\Players\\Players.csproj": {
+              "projectPath": "D:\\Escuela\\Programación\\domino\\Players\\Players.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
