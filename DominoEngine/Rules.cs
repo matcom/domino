@@ -1,194 +1,93 @@
 namespace DominoEngine;
 
-public class RulesBook<T> : IRules<T>
-{
-    IGenerator<T> _generator;
-    IDealer<T> _dealer;
-    IMatcher<T> _matcher;
-    ITurner<T> _turner;
-    IFinisher<T> _finisher;
-    IScorer<T> _scorer;
-
-    public RulesBook(IGenerator<T> generator, IDealer<T> dealer, IMatcher<T> matcher, 
-                    ITurner<T> turner, IFinisher<T> finisher, IScorer<T> scorer)
-    {
-        _generator = generator;
-        _dealer = dealer;
-        _matcher = matcher;
-        _turner = turner;
-        _finisher = finisher;
-        _scorer = scorer;
-    }
-
-    public bool CanMatch(Move<T> move)
-    {
-        return _matcher.CanMatch(move);
-    }
-
-    public void Dealing(IList<Ficha<T>> fichas)
-    {
-        _dealer.Dealing(fichas);
-    }
-
-    public bool GameOver()
-    {
-        return _finisher.GameOver();
-    }
-
-    public List<Ficha<T>> Generate()
-    {
-        return _generator.Generate();
-    }
-
-    public IEnumerable<Player<T>> NextTurn()
-    {
-        throw new NotImplementedException();
-    }
-
-    public double Scorer(Move<T> move)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public abstract class DominoScorer<T> : IScorer<T>
-{
-    protected Partida<T>? _partida;
-
-    public abstract double Scorer(Move<T> move);
-
-    public void SetPartida(Partida<T> partida)
-    {
-        _partida = partida;
-    }
-}
-
-public class ClassicScorer : DominoScorer<int>
+public class ClassicScorer : IScorer<int>
 {
     public ClassicScorer() { }
 
-    public override double Scorer(Move<int> move)
+    public double Scorer(Partida<int> partida, Move<int> move)
     {
         return move.Head + move.Tail;
     }
 }
 
-public abstract class DominoFinisher<T> : IFinisher<T>
+public class ClassicFinisher<T> : IFinisher<T>
 {
-    protected Partida<T>? _partida;
+    public ClassicFinisher() { }
 
-    public abstract bool GameOver();
-
-    public void SetPartida(Partida<T> partida)
+    public bool GameOver(Partida<T> partida)
     {
-        _partida = partida;
-    }
-}
-
-public class ClassicFinisher : DominoFinisher<int>
-{
-    public override bool GameOver()
-    {
-        return AllCheck() || PlayerEnd();
+        return AllCheck(partida) && PlayerEnd(partida);
     }
 
-    public bool AllCheck()
+    public bool AllCheck(Partida<T> partida)
     {
         bool all_checks = true;
 
-        foreach (var player in _partida!.Players())
-        {
-            List<Move<int>> moves = _partida.PlayersMoves(player);
-            if (!(moves[moves.Count-1].Check)) all_checks = false;
+        foreach (var player in partida.Players){
+            var lastmove = new Move<T>(partida.PlayerId(player));
+            foreach (var move in partida.Board.Where(x => x.PlayerId == partida.PlayerId(player))){
+                lastmove = move;
+            }
+
+            if (!lastmove.Check) all_checks = false;
         }
 
         return all_checks;
     }
 
-    public bool PlayerEnd()
+    public bool PlayerEnd(Partida<T> partida)
     {
-        foreach (var player in _partida!.Players())
+        foreach (var player in partida.Players)
         {
-            if (_partida.Hands[player].Count == 0) return true;
+            if (partida.Hand(player).Count() == 0) return true;
         }
 
         return false;
     }
 }
 
-public abstract class DominoMatcher<T> : IMatcher<T>
+public class ClassicMatcher<T> : IMatcher<T>
 {
-    protected Partida<T>? _partida;
-    protected List<int>? _validsTurns;
+    public ClassicMatcher() { }
 
-    public abstract bool CanMatch(Move<T> move);
-
-    public void SetPartida(Partida<T> partida)
+    public bool CanMatch(Partida<T> partida, Move<T> move)
     {
-        _partida = partida;
-        _validsTurns = new List<int>();
-    }
-
-    public abstract void ValidsTurn();
-}
-
-public class ClassicMatcher : DominoMatcher<int>
-{
-    public override bool CanMatch(Move<int> move)
-    {
-        if (!move.Check && move.Turn >= -1)
-        {
-            if (!_validsTurns!.Contains(move.Turn)) return false;
-            return (move.Turn == -1)? move.Head == _partida!.Board[0].Head : move.Head == _partida!.Board[move.Turn].Tail;
+        if (move.Check) return true;
+        foreach (var validturn in ValidsTurn(partida).Where(x => x == move.Turn)) {
+            if (!partida.Board[validturn].Tail!.Equals(move.Head)) return false;
+            return true;
         }
-        else return true;
+        return false;
     }
 
-    public override void ValidsTurn()
+    public IEnumerable<int> ValidsTurn(Partida<T> partida)
     {
-        _validsTurns = new List<int>();
+        var validsTurns = new List<int>();
 
-        for (int i = 0; i < _partida!.Board.Count; i++)
-        {
-            Move<int> move = _partida!.Board[i];
-            if (!move.Check)
-            {
-                if (move.Turn == -2)
-                {
-                    _validsTurns.Add(-1);
-                    _validsTurns.Add(0);
-                }
-                else
-                {
-                    _validsTurns.Remove(move.Turn);
-                    _validsTurns.Add(i);
-                }
+        foreach (var (i,move) in partida.Board.Enumerate().Where(x => !x.Item2.Check)){
+            if (i == 0){
+                validsTurns.Add(-1);
+                validsTurns.Add(0);
+            }
+            else{
+                validsTurns.Remove(move.Turn);
+                validsTurns.Add(i);
             }
         }
+
+        return validsTurns;
     }
 }
 
-public abstract class DominoTurner<T> : ITurner<T>
-{
-    protected Partida<T>? _partida;
-
-    public void SetPartida(Partida<T> partida)
-    {
-        _partida = partida;
-    }
-
-    public abstract IEnumerable<Player<T>> NextTurn();
-}
-
-public class ClassicTurner : DominoTurner<int>
+public class ClassicTurner<T> : ITurner<T>
 {
     public ClassicTurner() { }
 
-    public override IEnumerable<Player<int>> NextTurn()
+    public IEnumerable<Player<T>> Players(Partida<T> partida)
     {
         while (true)
         {
-            foreach (var player in _partida!.Players())
+            foreach (var player in partida!.Players)
             {
                 yield return player;
             }
@@ -196,69 +95,50 @@ public class ClassicTurner : DominoTurner<int>
     }
 }
 
-public abstract class Dealer<T> : IDealer<T>
+public class ClassicDealer<T> : IDealer<T>
 {
-    protected int _piecesForPlayers;
-    protected IEnumerable<Hand<T>>? _hands;
-
-    public abstract void Dealing(IList<Ficha<T>> fichas);
-}
-
-public class ClassicDealer : Dealer<int>
-{
-    public ClassicDealer(int piecesForPlayers, IEnumerable<Hand<int>> hands)
+    int _pieceForPlayers;
+    public ClassicDealer(int piecesForPlayers)
     {
-        _piecesForPlayers = piecesForPlayers;
-        _hands = hands;
+        _pieceForPlayers = piecesForPlayers;
     }
 
-    public override void Dealing(IList<Ficha<int>> fichas)
+    public void Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas)
     {
-        bool[] mask = new bool[fichas.Count];
+        bool[] mask = new bool[fichas.Count()];
+        var hand = new Hand<T>();
         Random r = new Random();
 
-        foreach (var hand in _hands!)
-        {
-            for (int j = 0; j < _piecesForPlayers; j++)
-            {
-                int m = r.Next(fichas.Count);
-
+        foreach (var player in partida.Players) {
+            while (hand.Count != _pieceForPlayers) {
+                int m = r.Next(fichas.Count());
                 while (mask[m])
-                {
-                    m = r.Next(fichas.Count);
-                }
-
-                hand.Add(fichas[m]);
+                    m = r.Next(fichas.Count());
+                hand.Add(fichas.ElementAt(m));
                 mask[m] = true;
             }
+            partida.SetHand(player, hand);
+            hand.Clear();
         }
     }
 }
 
-public abstract class Generator<T> : IGenerator<T>
+public class ClassicGenerator : IGenerator<int>
 {
-    protected int _number;
-    public abstract List<Ficha<T>> Generate();
-}
+    int _number;
 
-public class ClassicGenerator : Generator<int>
-{
     public ClassicGenerator(int number)
     {
         _number = number;
     }
 
-    public override List<Ficha<int>> Generate()
+    IEnumerable<Ficha<int>> IGenerator<int>.Generate()
     {
         List<Ficha<int>> fichas = new List<Ficha<int>>();
 
         for (int i = 0; i < _number; i++)
-        {
             for (int j = i; j < _number; j++)
-            {
                 fichas.Add(new Ficha<int>(i,j));
-            }
-        }
 
         return fichas;
     }
