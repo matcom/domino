@@ -1,4 +1,4 @@
-namespace DominoEngine; 
+﻿namespace DominoEngine; 
 
 public abstract class Player<T> {
 	private Hand<T>? _hand;

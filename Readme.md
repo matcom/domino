@@ -60,3 +60,32 @@ La aplicación puede ser tan sencilla como una aplicación de línea de comandos
 Independientemente de la tecnología utilizada, su interfaz debe ser suficientemente flexible para que cuando cambien la estructura de las fichas, o la longitud del juego, o cualquier otro aspecto que influya en cómo se visualiza, **la interfaz gráfica se adapte de forma automática**.
 
 ## Sobre la ingeniería de software
+
+El propósito fundamental de este proyecto es evaluar el uso de las buenas prácticas de desarrollo de software que se han enseñado en el curso. Por tal motivo, se pondrá especial énfasis en evaluar el diseño de las clases, interfaces, y métodos, y se profundizará durante la evaluación en la justificación que usted tenga para las decisiones de diseño de software que ha tomado.
+
+Esto tendrá mayor peso en la evaluación final que cualquier consideración sobre la funcionalidad en sí. La calidad de la interfaz gráfica, los efectos de sonido, la inteligencia artificial de los jugadores, todo eso aporta y será considerado, pero es secundario ante un buen diseño de clases que sea extensible y mantenible.
+
+Algunos consejos:
+
+- Recuerde los principios SOLID y diseñe en consecuencia.
+- Priorice las interfaces sobre las clases abstractas, y la composición sobre la herencia.
+- Recuerde que las abstracciones se diseñan encima de las funcionalidades a implementar, y no solamente encima de los "conceptos" o "entidades" convencionales del dominio.
+- Recuerde el principio DRY y las estrategias de encapsulamiento existentes para reutilizar código y evitar la duplicidad de funcionalidades.
+- Utilice nombres de clases y variables descriptivos, y adicione comentarios en su código para explicar las motivaciones detrás de su diseño.
+- Y sobre todo, recuerde que ningún diseño pensado a priori sobrevive la prueba del tiempo. Empiece con el diseño más sencillo posible e introduzca abstracciones a medida que descubre que las necesita.
+
+## Sobre la entrega
+
+Dada la complejidad del proyecto, el mismo se hará en dúos. Usted tiene la posibilidad de hacerlo individualmente, pero tenga en cuenta que la complejidad será mucho mayor.
+
+La entrega del proyecto será exclusivamente mediante un repositorio en Github.
+
+En la raíz de su proyecto debe haber un archivo `Readme.md` con **todas las instrucciones necesarias** para ejecutar su código, así como todos los detalles de instalación (si necesitara algo más allá de .NET Core 6) y el uso de su interfaz gráfica.
+
+Además, usted debe tener en la raíz de su repositorio un archivo de nombre `Report.pdf` que contendrá un reporte técnico de su proyecto. Este reporte tendrá una extensión mínima de 5 cuartillas, y ahí debe detallar su diseño de clases, exponiendo las motivaciones detrás de cada abstracción (clase, interfaz, método, etc.) así como todos los detalles de implementación que sean necesarios. Incluya fragmentos de código y capturas de pantalla para ayudar en la explicación.
+
+Para entregar su proyecto, usted debe [**abrir en este repositorio un *issue***](https://github.com/matcom/domino/issues/new?assignees=&labels=&template=proyecto.md&title=Proyecto+de+Nombre+y+Nombre), donde incluirá el nombre de los miembros del equipo, el link a su repositorio, y el link directo a su archivo `Report.pdf`.
+
+La evaluación se realizará en dos partes. Primero, su mentor evaluará el reporte y hará los comentarios que considere necesarios en el *issue* correspondiente a su proyecto. Una vez que el mentor considere que su proyecto está en condiciones de ser expuesto, le dará una cita para exponer en persona en la Facultad. El resultado de esa exposición quedará plasmado en el *issue* correspondiente.
+
+La nota final será decidida por un tribunal que tendrá en cuenta las consideraciones de su mentor así como el código fuente y el reporte entregado.

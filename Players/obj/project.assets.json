@@ -8,19 +8,19 @@
     "net6.0": []
   },
   "packageFolders": {
-    "C:\\Users\\Alex\\.nuget\\packages\\": {}
+    "C:\\Users\\omriv\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Players\\Players.csproj",
+      "projectUniqueName": "D:\\Escuela\\Programación\\domino\\Players\\Players.csproj",
       "projectName": "Players",
-      "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Players\\Players.csproj",
-      "packagesPath": "C:\\Users\\Alex\\.nuget\\packages\\",
-      "outputPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Players\\obj\\",
+      "projectPath": "D:\\Escuela\\Programación\\domino\\Players\\Players.csproj",
+      "packagesPath": "C:\\Users\\omriv\\.nuget\\packages\\",
+      "outputPath": "D:\\Escuela\\Programación\\domino\\Players\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Alex\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\omriv\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
@@ -58,7 +58,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.105\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,4 +1,4 @@
-namespace DominoEngine;
+﻿namespace DominoEngine;
 
 public interface IGenerator<T> {
 	// Interfaz que se encarga de generar todas las fichas que estaran en juego
@@ -7,7 +7,7 @@ public interface IGenerator<T> {
 
 public interface IDealer<T> {
 	// Interfaz que se encarga de repartir las fichas a los jugadores
-	public void Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas);
+	public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas);
 }
 
 public interface IMatcher<T> {

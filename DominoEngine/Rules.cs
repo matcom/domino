@@ -104,8 +104,9 @@ public class ClassicDealer<T> : IDealer<T>
         _pieceForPlayers = piecesForPlayers;
     }
 
-    public void Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas)
+    public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas)
     {
+        Dictionary<Player<T>, Hand<T>> hands = new();
         bool[] mask = new bool[fichas.Count()];
         var hand = new Hand<T>();
         Random r = new Random();
@@ -118,9 +119,11 @@ public class ClassicDealer<T> : IDealer<T>
                 hand.Add(fichas.ElementAt(m));
                 mask[m] = true;
             }
-            partida.SetHand(player, hand);
+            hands.Add(player, hand);
             hand.Clear();
         }
+
+        return hands;
     }
 }
 
