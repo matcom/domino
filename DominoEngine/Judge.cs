@@ -1,8 +1,6 @@
-using System.Diagnostics;
-
 namespace DominoEngine;
 
-internal class Judge<T> {
+public class Judge<T> {
 	private readonly IGenerator<T> _generator;
 	private readonly IDealer<T> _dealer;
 	private readonly ITurner<T> _turner;
@@ -23,19 +21,21 @@ internal class Judge<T> {
 
 	public void Start(Partida<T> partida) {
 		_partida = partida;
-		_dealer.Deal(partida, _generator.Generate());
+		foreach (var (player, hand) in _dealer.Deal(partida, _generator.Generate()))
+			_partida.SetHand(player, hand);
 	}
 
 	public IEnumerable<int> Play() {
-		foreach (var (i, player) in _turner.Players(_partida).Enumerate()) {
+		foreach (var (i, player) in _turner.Players(_partida).Enumerate().TakeWhile(_ => !_finisher.GameOver(_partida))) {
 			if (i is 0) {
 				Salir(player);
+				yield return i;
 				continue;
 			}
 
 			var validMoves = GenValidMoves(player).ToHashSet();
-			var move = player.Play(validMoves);
-			if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
+			var move = player.Play(validMoves, _partida, _scorer.Scorer);
+			if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault(new Move<T>(_partida.PlayerId(player)));
 			_partida.AddMove(move);
 			if (!move.Check) _partida.RemoveFromHand(player, move.Ficha);
 			yield return i;
@@ -44,8 +44,8 @@ internal class Judge<T> {
 
 	private void Salir(Player<T> player) {
 		var validMoves = GenSalidas(player).ToHashSet();
-		var move = player.Play(validMoves);
-		if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
+		var move = player.Play(validMoves, _partida, _scorer.Scorer);
+		if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault(new Move<T>(_partida.PlayerId(player)));
 		_partida.AddMove(move);
 	}
 
@@ -63,12 +63,11 @@ internal class Judge<T> {
 	}
 
 	private IEnumerable<Move<T>> GenValidMoves(Player<T> player) =>
-		GenMoves(player).Where(t => _matcher.CanMatch(_partida, t));
+		_matcher.CanMatch(_partida, GenMoves(player));
 
 	private IEnumerable<Move<T>> GenSalidas(Player<T> player) {
 		var id = _partida.PlayerId(player);
-		foreach (var ficha in _partida.Hand(player)) {
-			yield return new Move<T>(id, false, -2, ficha.Head, ficha.Tail);
-		}
+		return _matcher.CanSalida(_partida,
+			_partida.Hand(player).Select(ficha => new Move<T>(id, false, -2, ficha.Head, ficha.Tail)));
 	}
 }

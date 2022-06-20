@@ -5,11 +5,13 @@ public interface IGenerator<T> {
 }
 
 public interface IDealer<T> {
-	public void Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas);
+	public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas);
 }
 
 public interface IMatcher<T> {
-	public bool CanMatch(Partida<T> partida, Move<T> move);
+	public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> moves);
+
+	public IEnumerable<Move<T>> CanSalida(Partida<T> partida, IEnumerable<Move<T>> moves);
 }
 
 public interface ITurner<T> {

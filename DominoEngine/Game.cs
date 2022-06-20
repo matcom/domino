@@ -1,7 +1,7 @@
 ﻿namespace DominoEngine; 
 
 public class Game<T> {//hay que hacerlo
-	public Game() {
+	public Game(Judge<T> judge) {
 		
 	}
 }
