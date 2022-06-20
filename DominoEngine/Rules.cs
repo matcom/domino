@@ -16,31 +16,26 @@ public class ClassicFinisher<T> : IFinisher<T>
 
     public bool GameOver(Partida<T> partida)
     {
-        return AllCheck(partida) && PlayerEnd(partida);
+        return AllCheck(partida) || PlayerEnd(partida);
     }
 
     public bool AllCheck(Partida<T> partida)
     {
-        bool all_checks = true;
-
         foreach (var player in partida.Players){
             var lastmove = new Move<T>(partida.PlayerId(player));
-            foreach (var move in partida.Board.Where(x => x.PlayerId == partida.PlayerId(player))){
+            foreach (var move in partida.Board.Where(x => x.PlayerId == partida.PlayerId(player)))
                 lastmove = move;
-            }
 
-            if (!lastmove.Check) all_checks = false;
+            if (!lastmove.Check) return false;;
         }
 
-        return all_checks;
+        return true;
     }
 
     public bool PlayerEnd(Partida<T> partida)
     {
         foreach (var player in partida.Players)
-        {
             if (partida.Hand(player).Count() == 0) return true;
-        }
 
         return false;
     }
@@ -48,21 +43,29 @@ public class ClassicFinisher<T> : IFinisher<T>
 
 public class ClassicMatcher<T> : IMatcher<T>
 {
+    List<int>? validsTurns;
+
     public ClassicMatcher() { }
+
+    public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable)
+    {
+        ValidsTurn(partida);
+        return enumerable.Where(x => CanMatch(partida, x));
+    }
 
     public bool CanMatch(Partida<T> partida, Move<T> move)
     {
         if (move.Check) return true;
-        foreach (var validturn in ValidsTurn(partida).Where(x => x == move.Turn)) {
+        foreach (var validturn in validsTurns!.Where(x => x == move.Turn)) {
             if (!partida.Board[validturn].Tail!.Equals(move.Head)) return false;
             return true;
         }
         return false;
     }
 
-    public IEnumerable<int> ValidsTurn(Partida<T> partida)
+    private void ValidsTurn(Partida<T> partida)
     {
-        var validsTurns = new List<int>();
+        validsTurns = new List<int>();
 
         foreach (var (i,move) in partida.Board.Enumerate().Where(x => !x.Item2.Check)){
             if (i == 0){
@@ -74,8 +77,6 @@ public class ClassicMatcher<T> : IMatcher<T>
                 validsTurns.Add(i);
             }
         }
-
-        return validsTurns;
     }
 }
 

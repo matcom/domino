@@ -34,17 +34,18 @@ internal class Judge<T> {
 			}
 
 			var validMoves = GenValidMoves(player).ToHashSet();
-			var move = player.Play(validMoves);
+			var move = player.Play(validMoves, x => _scorer.Scorer(_partida!, x));
 			if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
 			_partida!.AddMove(move!);
 			if (!move!.Check) _partida.RemoveFromHand(player, move.Ficha!);
 			yield return i;
+			if (_finisher.GameOver(_partida)) break;
 		}
 	}
 
 	private void Salir(Player<T> player) {
 		var validMoves = GenSalidas(player).ToHashSet();
-		var move = player.Play(validMoves);
+		var move = player.Play(validMoves, x => _scorer.Scorer(_partida!, x));
 		if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
 		_partida!.AddMove(move!);
 	}
@@ -63,7 +64,8 @@ internal class Judge<T> {
 	}
 
 	private IEnumerable<Move<T>> GenValidMoves(Player<T> player) =>
-		GenMoves(player).Where(t => _matcher.CanMatch(_partida!, t));
+		_matcher.CanMatch(_partida!, GenMoves(player));
+		// GenMoves(player).Where(t => _matcher.CanMatch(_partida!, t));
 
 	private IEnumerable<Move<T>> GenSalidas(Player<T> player) {
 		var id = _partida!.PlayerId(player);
