@@ -4,7 +4,6 @@ namespace DominoEngine;
 
 public class Board<T>: IReadOnlyList<Move<T>> {
 	List<Move<T>> _moves; 
-
 	public IEnumerator<Move<T>> GetEnumerator() => _moves.GetEnumerator();
 
 	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

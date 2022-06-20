@@ -1,3 +1,5 @@
 namespace DominoEngine;
 
-public record Move<T>(T Head, T Tail, int PlayerId, bool Check = false, int Turn = -2);
+public record Move<T>(int PlayerId, bool Check = true, int Turn = -2, T? Head = default, T? Tail = default) {
+	public Ficha<T?> Ficha => new Ficha<T?>(Head, Tail);
+}

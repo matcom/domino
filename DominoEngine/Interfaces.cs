@@ -1,38 +1,27 @@
-namespace DominoEngine;
+﻿namespace DominoEngine;
 
-public interface IRules<T> : IGenerator<T>, IDealer<T>, IMatcher<T>, ITurner<T>, IFinisher<T>, IScorer<T> { }
-
-public interface IGenerator<T>
-{
-    public List<Ficha<T>> Generate();
+public interface IGenerator<T> {
+	public IEnumerable<Ficha<T>> Generate();
 }
 
-public interface IDealer<T>
-{
-    public void Dealing(IList<Ficha<T>> fichas);
+public interface IDealer<T> {
+	public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas);
 }
 
-public interface IMatcher<T>
-{
-    public bool CanMatch(Move<T> move);
+public interface IMatcher<T> {
+	public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> moves);
+
+	public IEnumerable<Move<T>> CanSalida(Partida<T> partida, IEnumerable<Move<T>> moves);
 }
 
-public interface ITurner<T>
-{
-    public IEnumerable<Player<T>> NextTurn();
+public interface ITurner<T> {
+	public IEnumerable<Player<T>> Players(Partida<T> partida);
 }
 
-public interface IFinisher<T>
-{
-    public bool GameOver();
+public interface IFinisher<T> {
+	public bool GameOver(Partida<T> partida);
 }
 
-public interface IScorer<T>
-{
-    public double Scorer(Move<T> move);
-}
-
-public interface ICloneable<T> : ICloneable
-{
-    public new T Clone();
+public interface IScorer<T> {
+	public double Scorer(Partida<T> partida, Move<T> move);
 }
