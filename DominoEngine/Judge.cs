@@ -25,20 +25,18 @@ public class Judge<T> {
 			_partida.SetHand(player, hand);
 	}
 
-	public IEnumerable<int> Play() {
+	public IEnumerable<Player<T>> Play() {
 		foreach (var (i, player) in _turner.Players(_partida).Enumerate().TakeWhile(_ => !_finisher.GameOver(_partida))) {
+			yield return player;
 			if (i is 0) {
 				Salir(player);
-				yield return i;
 				continue;
 			}
-
 			var validMoves = GenValidMoves(player).ToHashSet();
 			var move = player.Play(validMoves, _partida, _scorer.Scorer);
 			if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault(new Move<T>(_partida.PlayerId(player)));
 			_partida.AddMove(move);
 			if (!move.Check) _partida.RemoveFromHand(player, move.Ficha);
-			yield return i;
 		}
 	}
 
