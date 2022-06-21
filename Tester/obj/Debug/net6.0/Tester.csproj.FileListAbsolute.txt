@@ -16,3 +16,5 @@ C:\Alex\Proyectos Pro\Domino\Domino\domino\Tester\obj\Debug\net6.0\Tester.dll
 C:\Alex\Proyectos Pro\Domino\Domino\domino\Tester\obj\Debug\net6.0\ref\Tester.dll
 C:\Alex\Proyectos Pro\Domino\Domino\domino\Tester\obj\Debug\net6.0\Tester.pdb
 C:\Alex\Proyectos Pro\Domino\Domino\domino\Tester\obj\Debug\net6.0\Tester.genruntimeconfig.cache
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Tester\bin\Debug\net6.0\Players.dll
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Tester\bin\Debug\net6.0\Players.pdb

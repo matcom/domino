@@ -1,8 +1,8 @@
-﻿﻿using System.Diagnostics;
+using System.Diagnostics;
 
 namespace DominoEngine;
 
-internal class Judge<T> {
+public class Judge<T> {
 	private readonly IGenerator<T> _generator;
 	private readonly IDealer<T> _dealer;
 	private readonly ITurner<T> _turner;
@@ -27,11 +27,11 @@ internal class Judge<T> {
 			_partida.SetHand(player, hand);
 	}
 
-	public IEnumerable<int> Play() {
+	public IEnumerable<Player<T>> Play() {
 		foreach (var (i, player) in _turner.Players(_partida!).Enumerate().TakeWhile(_ => !_finisher.GameOver(_partida!))) {
 			if (i is 0) {
 				Salir(player);
-				yield return i;
+				yield return player;
 				continue;
 			}
 
@@ -40,7 +40,7 @@ internal class Judge<T> {
 			if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
 			_partida!.AddMove(move!);
 			if (!move!.Check) _partida.RemoveFromHand(player, move.Ficha!);
-			yield return i;
+			yield return player;
 		}
 	}
 

@@ -6,14 +6,6 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "DominoEngine/1.0.0": {
-        "dependencies": {
-          "Players": "1.0.0"
-        },
-        "runtime": {
-          "DominoEngine.dll": {}
-        }
-      },
       "Players/1.0.0": {
         "runtime": {
           "Players.dll": {}
@@ -22,11 +14,6 @@
     }
   },
   "libraries": {
-    "DominoEngine/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
     "Players/1.0.0": {
       "type": "project",
       "serviceable": false,

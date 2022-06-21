@@ -1,0 +1,12 @@
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\bin\Debug\net6.0\Players.deps.json
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\bin\Debug\net6.0\Players.dll
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\bin\Debug\net6.0\ref\Players.dll
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\bin\Debug\net6.0\Players.pdb
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\obj\Debug\net6.0\Players.csproj.AssemblyReference.cache
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\obj\Debug\net6.0\Players.GeneratedMSBuildEditorConfig.editorconfig
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\obj\Debug\net6.0\Players.AssemblyInfoInputs.cache
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\obj\Debug\net6.0\Players.AssemblyInfo.cs
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\obj\Debug\net6.0\Players.csproj.CoreCompileInputs.cache
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\obj\Debug\net6.0\Players.dll
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\obj\Debug\net6.0\ref\Players.dll
+C:\Alex\Proyectos Pro\Domino\Domino\domino\Players\obj\Debug\net6.0\Players.pdb
