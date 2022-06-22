@@ -25,11 +25,7 @@
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
-            "projectReferences": {
-              "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Players\\Players.csproj": {
-                "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Players\\Players.csproj"
-              }
-            }
+            "projectReferences": {}
           }
         },
         "warningProperties": {
@@ -81,7 +77,11 @@
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\DominoEngine\\DominoEngine.csproj": {
+                "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\DominoEngine\\DominoEngine.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -136,6 +136,9 @@
             "projectReferences": {
               "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\DominoEngine\\DominoEngine.csproj": {
                 "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\DominoEngine\\DominoEngine.csproj"
+              },
+              "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Players\\Players.csproj": {
+                "projectPath": "C:\\Alex\\Proyectos Pro\\Domino\\Domino\\domino\\Players\\Players.csproj"
               }
             }
           }

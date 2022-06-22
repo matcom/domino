@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DominoEngine\DominoEngine.csproj" />
+    <ProjectReference Include="..\Players\Players.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

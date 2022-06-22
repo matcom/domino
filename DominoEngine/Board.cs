@@ -3,7 +3,7 @@
 namespace DominoEngine;
 
 public class Board<T>: IReadOnlyList<Move<T>> {
-	List<Move<T>>? _moves; 
+	List<Move<T>> _moves = new(); 
 
 	public IEnumerator<Move<T>> GetEnumerator() => _moves!.GetEnumerator();
 
@@ -14,4 +14,12 @@ public class Board<T>: IReadOnlyList<Move<T>> {
 	public Move<T> this[int index] => _moves![index];
 
 	public void Add(Move<T> item) => _moves!.Add(item);
+
+    public override string ToString()
+    {
+        string result = "";
+		foreach (var move in _moves!)
+			result += $"{move.PlayerId}: {move.ToString()}\n";
+		return result;
+    }
 }

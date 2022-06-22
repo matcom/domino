@@ -26,7 +26,7 @@ public class ClassicFinisher<T> : IFinisher<T>
             foreach (var move in partida.Board.Where(x => x.PlayerId == partida.PlayerId(player)))
                 lastmove = move;
 
-            if (!lastmove.Check) return false;;
+            if (!lastmove.Check || partida.Board.Count < partida.Players.Count) return false;
         }
 
         return true;
@@ -53,12 +53,12 @@ public class ClassicMatcher<T> : IMatcher<T>
         return enumerable.Where(x => CanMatch(partida, x));
     }
 
-    public bool CanMatch(Partida<T> partida, Move<T> move)
+    private bool CanMatch(Partida<T> partida, Move<T> move)
     {
         if (move.Check) return true;
         foreach (var validturn in validsTurns!.Where(x => x == move.Turn)) {
-            if (!partida.Board[validturn].Tail!.Equals(move.Head)) return false;
-            return true;
+            if (validturn == -1) return partida.Board[0].Head!.Equals(move.Head);
+            return partida.Board[validturn].Tail!.Equals(move.Head);
         }
         return false;
     }
@@ -120,7 +120,7 @@ public class ClassicDealer<T> : IDealer<T>
                 mask[m] = true;
             }
             hands.Add(player, hand);
-            hand.Clear();
+            hand = new();
         }
 
         return hands;

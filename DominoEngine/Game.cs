@@ -23,4 +23,19 @@ public class Game<T> : IEnumerable<GameState<T>> { //hay que hacerlo
 	}
 }
 
-public record GameState<T>(int Turn, Player<T> PlayerToPlay, List<Move<T>> Board, Dictionary<Player<T>, Hand<T>> Hands);
+public record GameState<T>(int Turn, Player<T> PlayerToPlay, List<Move<T>> Board, Dictionary<Player<T>, Hand<T>> Hands)
+{
+    public override string ToString()
+    {
+		string result = "";
+        result += $"Turn: {Turn}\n";
+		result += $"Player to Play: {PlayerToPlay.ToString()}\n"; 
+		result += $"Hands:\n";
+		foreach (var (player, hand) in Hands)
+			result += $"Player {player.ToString()}: {hand.ToString()}\n";
+		int count = 0;
+		foreach (var move in Board)
+			result += $"Turn {count++}: Player {move.PlayerId}: {move.ToString()}\n";
+		return result;
+    }
+}

@@ -13,7 +13,6 @@ public interface IDealer<T> {
 public interface IMatcher<T> {
 	// Interfaz que se encarga de decidir si dos fichas matchean o no
 	public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable);
-	public bool CanMatch(Partida<T> partida, Move<T> move);
 }
 
 public interface ITurner<T> {

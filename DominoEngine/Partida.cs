@@ -19,11 +19,11 @@ public class Partida<T> {
 
 	internal IEnumerable<Ficha<T>> Hand(Player<T> player) => Hands[player].Clone();
 
-	internal int PlayerId(Player<T> player) => _players.IndexOf(player);
+	internal int PlayerId(Player<T> player) => _players.IndexOf(player)+1;
 
 	internal List<Move<T>> Board => _board.ToList();
 
-	internal void SetHand(Player<T> player, Hand<T> hand) => Hands[player] = hand.Clone();
+	internal void SetHand(Player<T> player, Hand<T> hand) => Hands.Add(player, hand.Clone());
 
 	internal List<Player<T>> Players => _players;
 

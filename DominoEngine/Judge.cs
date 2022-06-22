@@ -24,36 +24,41 @@ public class Judge<T> {
 	public void Start(Partida<T> partida) {
 		_partida = partida;
 		foreach (var (player, hand) in _dealer.Deal(partida, _generator.Generate()))
-			_partida.SetHand(player, hand);
+			_partida.SetHand(player.SetHand(hand), hand);
 	}
 
 	public IEnumerable<Player<T>> Play() {
-		foreach (var (i, player) in _turner.Players(_partida!).Enumerate().TakeWhile(_ => !_finisher.GameOver(_partida!))) {
+		foreach (var (i, player) in _turner.Players(_partida!).Enumerate()) {
+			if (_finisher.GameOver(_partida!)) {
+				yield return player;
+				yield break;
+			}
+			yield return player;
 			if (i is 0) {
 				Salir(player);
-				yield return player;
 				continue;
 			}
 
 			var validMoves = GenValidMoves(player).ToHashSet();
-			var move = player.Play(validMoves, x => _scorer.Scorer(_partida!, x));
+			if (validMoves.Count == 0) validMoves.Add(new Move<T>(_partida!.PlayerId(player)));
+			var move = player.Play(validMoves, _partida!, x => _scorer.Scorer(_partida!, x));
 			if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
 			_partida!.AddMove(move!);
 			if (!move!.Check) _partida.RemoveFromHand(player, move.Ficha!);
-			yield return player;
 		}
 	}
 
 	private void Salir(Player<T> player) {
 		var validMoves = GenSalidas(player).ToHashSet();
-		var move = player.Play(validMoves, x => _scorer.Scorer(_partida!, x));
+		var move = player.Play(validMoves, _partida!, x => _scorer.Scorer(_partida!, x));
 		if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
+		if (!move!.Check) _partida!.RemoveFromHand(player, move.Ficha!);
 		_partida!.AddMove(move!);
 	}
 
 	private IEnumerable<Move<T>> GenMoves(Player<T> player) {
 		var playerId = _partida!.PlayerId(player);
-		yield return new Move<T>(playerId);
+		// yield return new Move<T>(playerId);
 		foreach (var (head, tail) in _partida.Hand(player)) {
 			yield return new Move<T>(playerId, false, -1, head, tail);
 			yield return new Move<T>(playerId, false, -1, tail, head);

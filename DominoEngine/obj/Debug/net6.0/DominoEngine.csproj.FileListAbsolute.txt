@@ -10,6 +10,3 @@ C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoE
 C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.dll
 C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\ref\DominoEngine.dll
 C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.pdb
-C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\bin\Debug\net6.0\Players.dll
-C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\bin\Debug\net6.0\Players.pdb
-C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.csproj.CopyComplete
