@@ -8,6 +8,15 @@ public class ClassicScorer : IScorer<int>
     {
         return move.Head + move.Tail;
     }
+
+    public double TokenScorer(Ficha<int> token) => token.Head + token.Tail;
+
+    public Team<int> Winner(Partida<int> partida)
+    {
+        foreach (var player in partida.Players().Where(x => partida.Hands[x].IsEmpty()))
+            return partida.TeamOf(player);
+        return partida.TeamOf(partida.Hands.Select(x => (x.Key, x.Value.Sum(x => TokenScorer(x)))).MinBy(x => x.Item2).Key);
+    }
 }
 
 public class ClassicFinisher<T> : IFinisher<T>
@@ -21,12 +30,12 @@ public class ClassicFinisher<T> : IFinisher<T>
 
     public bool AllCheck(Partida<T> partida)
     {
-        foreach (var player in partida.Players){
+        foreach (var player in partida.Players()){
             var lastmove = new Move<T>(partida.PlayerId(player));
             foreach (var move in partida.Board.Where(x => x.PlayerId == partida.PlayerId(player)))
                 lastmove = move;
 
-            if (!lastmove.Check || partida.Board.Count < partida.Players.Count) return false;
+            if (!lastmove.Check || partida.Board.Count < partida.Players().Count()) return false;
         }
 
         return true;
@@ -34,7 +43,7 @@ public class ClassicFinisher<T> : IFinisher<T>
 
     public bool PlayerEnd(Partida<T> partida)
     {
-        foreach (var player in partida.Players)
+        foreach (var player in partida.Players())
             if (partida.Hand(player).Count() == 0) return true;
 
         return false;
@@ -50,7 +59,8 @@ public class ClassicMatcher<T> : IMatcher<T>
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable)
     {
         ValidsTurn(partida);
-        return enumerable.Where(x => CanMatch(partida, x));
+        var enume = enumerable.Where(x => !x.Check).Where(x => CanMatch(partida, x));
+        return (enume.IsEmpty())? enumerable.Where(x => x.Check) : enume;
     }
 
     private bool CanMatch(Partida<T> partida, Move<T> move)
@@ -88,7 +98,7 @@ public class ClassicTurner<T> : ITurner<T>
     {
         while (true)
         {
-            foreach (var player in partida!.Players)
+            foreach (var player in partida!.Players())
             {
                 yield return player;
             }
@@ -107,20 +117,15 @@ public class ClassicDealer<T> : IDealer<T>
     public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas)
     {
         Dictionary<Player<T>, Hand<T>> hands = new();
-        bool[] mask = new bool[fichas.Count()];
-        var hand = new Hand<T>();
         Random r = new Random();
+        var enumerator = fichas.OrderBy(x => r.NextDouble()-0.5).GetEnumerator();
 
-        foreach (var player in partida.Players) {
-            while (hand.Count != _pieceForPlayers) {
-                int m = r.Next(fichas.Count());
-                while (mask[m])
-                    m = r.Next(fichas.Count());
-                hand.Add(fichas.ElementAt(m));
-                mask[m] = true;
-            }
+        foreach (var player in partida.Players()){
+            var hand = new Hand<T>();
+            var count = 0;
+            while (count++ < _pieceForPlayers && enumerator.MoveNext())
+                hand.Add(enumerator.Current);
             hands.Add(player, hand);
-            hand = new();
         }
 
         return hands;

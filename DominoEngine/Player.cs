@@ -1,13 +1,13 @@
 ﻿namespace DominoEngine;
 
 public abstract class Player<T> {
+	protected Random random = new Random();
 	private Hand<T>? _hand;
-	public int id;
+	public readonly string name = "";
 
-    protected Player(int ID)
-    {
-		id = ID;
-    }
+    protected Player(string Name) {
+		name = Name;
+	}
 
     public Player<T> SetHand(Hand<T> hand){
 		_hand = hand;
@@ -16,9 +16,11 @@ public abstract class Player<T> {
 
 	public override string ToString()
 	{
-		return id.ToString();
+		return name;
 	}
 
-	public abstract Move<T> Play(IEnumerable<Move<T>> possibleMoves, Partida<T> partida,
-		Func<Move<T>, double> scorer);
+	public abstract Move<T> Play(IEnumerable<Move<T>> possibleMoves, List<Move<T>> board, 
+		Func<int, int> inHand, Func<Move<T>, double> scorer);
+
+	public int PlayerId => this.GetHashCode();
 }

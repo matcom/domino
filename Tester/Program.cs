@@ -5,23 +5,17 @@ public class Program
 {
     public static void Main()
     {
-        List<Player<int>> players = new();
-        for (int i = 0; i < 4; i++) players.Add(new RandomPlayer<int>(i+1));
-        ClassicGenerator generator = new ClassicGenerator(10);
-        ClassicDealer<int> dealer = new ClassicDealer<int>(10);
-        ClassicMatcher<int> matcher = new ClassicMatcher<int>();
-        ClassicScorer scorer = new ClassicScorer();
-        ClassicTurner<int> turner = new ClassicTurner<int>();
-        ClassicFinisher<int> finisher = new ClassicFinisher<int>();
-        Judge<int> judge = new Judge<int>(generator, dealer, turner, matcher, scorer, finisher);
-        Game<int> game = new Game<int>(judge, players);
+        List<string> names = new List<string>() {"Alex", "Omar", "Jky", "Anthuan"};
+        List<Team<int>> teams = new();
+        foreach (var name in names) 
+            teams.Add(new Team<int>(new List<Player<int>>(){new Botagorda<int>(name)}));
+        Game<int> game = new Game<int>(new ClassicJudge(), teams);
 
         foreach (var GameEstate in game)
         {
             System.Console.WriteLine(GameEstate);
             Console.ReadLine();
             // Console.Clear();
-
         }
 
         Console.ReadLine();
