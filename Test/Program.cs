@@ -2,6 +2,6 @@
 using Domino.Game;
 using System;
 
-DominoGame game = new DominoGame(9, 10);
+DominoGame game = new DominoGame(7, 9);
 
-DominoGame.Result();
+game.Result();
