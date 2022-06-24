@@ -5,7 +5,7 @@ using Domino.Utils;
 namespace Domino.Game;
 
 public class DominoGame<TToken> where TToken : DominoToken {
-    DominoPlayer[] players;
+    IList<DominoPlayer> players;
     IEnumerable<DominoToken>[] playerTokens;
     List<DominoMove> moves;
     DominoToken startToken;
@@ -14,22 +14,19 @@ public class DominoGame<TToken> where TToken : DominoToken {
     int passCounter = 0;
     bool ended = false;
 
-    public DominoGame(int tokenValues, int tokenAmount, ITokenGenerator<TToken> generator) {
+    public DominoGame(
+        int tokenValues, int tokenAmount, ITokenGenerator<TToken> generator, IList<DominoPlayer> players
+    ) {
         this.currentPlayer = 0;
         this.freeValues = new int[2];
-        this.players = new DominoPlayer[]{
-            new GreedyDominoPlayer("Player 1"), 
-            new RandomDominoPlayer("Player 2"), 
-            new RandomDominoPlayer("Player 3"), 
-            new GreedyDominoPlayer("Player 4")
-        };
+        this.players = players;
 
-        this.playerTokens = new IEnumerable<DominoToken>[this.players.Length];
+        this.playerTokens = new IEnumerable<DominoToken>[this.players.Count];
         this.moves = new List<DominoMove>();
 
         IList<TToken> tokens = generator.GenerateTokens(tokenValues);
 
-        for(int i = 0; i < this.players.Length; i++) {
+        for(int i = 0; i < this.players.Count; i++) {
             List<DominoToken> playerTokenList = new List<DominoToken>();
             Random randObject = new Random();
 
@@ -76,9 +73,9 @@ public class DominoGame<TToken> where TToken : DominoToken {
     }
 
     public virtual DominoPlayer GetWinner() {
-        int[] playerScores = new int[this.players.Length];
+        int[] playerScores = new int[this.players.Count];
 
-        for(int i = 0; i < this.players.Length; i++)
+        for(int i = 0; i < this.players.Count; i++)
         {
             playerScores[i] += this.playerTokens[i].Sum(token => token.Value());
         }
@@ -87,7 +84,7 @@ public class DominoGame<TToken> where TToken : DominoToken {
     }
 
     protected virtual void NextPlayer() {
-        if (this.currentPlayer == this.players.Length - 1)
+        if (this.currentPlayer == this.players.Count - 1)
             this.currentPlayer = 0;
         else
             this.currentPlayer++;
