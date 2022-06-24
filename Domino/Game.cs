@@ -141,7 +141,7 @@ public class DominoGame {
         
         foreach(DominoMove move in this.moves)
             System.Console.WriteLine(move);
-        System.Console.WriteLine(GetWinner());
+        System.Console.WriteLine($"Winner: {GetWinner()}");
     }
 }
 
