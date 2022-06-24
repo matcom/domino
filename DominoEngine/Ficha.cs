@@ -1,14 +1,26 @@
-﻿namespace DominoEngine; 
+﻿namespace DominoEngine;
 
-public record Ficha<T>(T Head, T Tail) : IEquatable<Ficha<T>>
-{
-    public bool Equal(Ficha<T> ficha)
-    {
-        return (this.Head!.Equals(ficha.Head) && this.Tail!.Equals(ficha.Tail)) || (this.Head!.Equals(ficha.Tail) && this.Tail!.Equals(ficha.Head));
-    }
-    
-    public override string ToString()
-    {
-        return $"({Head!.ToString()}|{Tail!.ToString()})";
-    }
+public struct Ficha<T> {
+	public readonly T Head;
+	public readonly T Tail;
+
+	public Ficha(T head, T tail) {
+		Tail = tail;
+		Head = head;
+	}
+
+	public override bool Equals(object? obj) => obj is Ficha<T> obj1 && Equals(obj1);
+
+	public override int GetHashCode() {
+		return HashCode.Combine(Head) * HashCode.Combine(Tail);
+	}
+
+	public bool Equals(Ficha<T> ficha) =>
+		(Equals(Head, ficha.Head) && Equals(Tail, ficha.Tail)) ||
+		(Equals(Head, ficha.Tail) && Equals(Tail, ficha.Head));
+
+	public void Deconstruct(out T head, out T tail) {
+		head = Head;
+		tail = Tail;
+	}
 }

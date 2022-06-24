@@ -27,7 +27,7 @@ public class Hand<T>: ICollection<Ficha<T>> {
 
 	public bool Remove(Ficha<T> item){
 		foreach (var ficha in _hand)
-			if (item.Equal(ficha))
+			if (item.Equals(ficha))
 				return _hand.Remove(ficha);
 		return false;
 	}

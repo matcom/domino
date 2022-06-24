@@ -15,7 +15,7 @@ public class ClassicScorer : IScorer<int>
     {
         foreach (var player in partida.Players().Where(x => partida.Hands[x].IsEmpty()))
             return partida.TeamOf(player);
-        return partida.TeamOf(partida.Hands.Select(x => (x.Key, x.Value.Sum(x => TokenScorer(x)))).MinBy(x => x.Item2).Key);
+        return partida.TeamOf(partida.Hands.MinBy(x => x.Value.Sum(x => TokenScorer(x))).Key);
     }
 }
 
