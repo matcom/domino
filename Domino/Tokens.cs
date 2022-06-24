@@ -28,7 +28,7 @@ public class SixUnvaluableDominoToken : DominoToken {
         if (Right != 6)
             value += Right;
         if (Left != 6)
-            value += Right;
+            value += Left;
 
         return value;
     }
