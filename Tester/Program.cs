@@ -15,7 +15,6 @@ public class Program
         {
             System.Console.WriteLine(GameEstate);
             Console.ReadLine();
-            // Console.Clear();
         }
 
         Console.ReadLine();
