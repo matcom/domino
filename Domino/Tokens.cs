@@ -42,7 +42,7 @@ public class DoubledValueDominoToken : DominoToken {
     }
 }
 
-public interface ITokenGenerator<TToken> where TToken : DominoToken {
+public interface ITokenGenerator<TToken> {
     public IList<TToken> GenerateTokens(int tokenValues);
 }
 
