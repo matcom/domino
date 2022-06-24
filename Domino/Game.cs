@@ -1,7 +1,11 @@
+using Domino.Players;
+using Domino.Tokens;
+using Domino.Utils;
+
 namespace Domino.Game;
 
-public class DominoGame {
-    DominoPlayer[] players;
+public class DominoGame<TToken> where TToken : DominoToken {
+    IList<DominoPlayer> players;
     IEnumerable<DominoToken>[] playerTokens;
     List<DominoMove> moves;
     DominoToken startToken;
@@ -10,28 +14,19 @@ public class DominoGame {
     int passCounter = 0;
     bool ended = false;
 
-    public DominoGame(int tokenValues, int tokenAmount) {
+    public DominoGame(
+        int tokenValues, int tokenAmount, ITokenGenerator<TToken> generator, IList<DominoPlayer> players
+    ) {
         this.currentPlayer = 0;
         this.freeValues = new int[2];
-        this.players = new DominoPlayer[]{
-            new DominoPlayer("Player 1"), 
-            new DominoPlayer("Player 2"), 
-            new DominoPlayer("Player 3"), 
-            new DominoPlayer("Player 4")
-        };
-        this.playerTokens = new IEnumerable<DominoToken>[this.players.Length];
+        this.players = players;
+
+        this.playerTokens = new IEnumerable<DominoToken>[this.players.Count];
         this.moves = new List<DominoMove>();
 
-        List<int[]> tokenValuesList = new List<int[]>();
-        List<DominoToken> tokens = new List<DominoToken>();
+        IList<TToken> tokens = generator.GenerateTokens(tokenValues);
 
-        Utils.GenerateTokenValues(tokenValues, tokenValuesList);
-        
-        foreach(int[] values in tokenValuesList) {
-            tokens.Add(new DominoToken(values[0], values[1]));
-        }
-
-        for(int i = 0; i < this.players.Length; i++) {
+        for(int i = 0; i < this.players.Count; i++) {
             List<DominoToken> playerTokenList = new List<DominoToken>();
             Random randObject = new Random();
 
@@ -77,19 +72,19 @@ public class DominoGame {
         return false;
     }
 
-    internal virtual DominoPlayer GetWinner() {
-        int[] playerScores = new int[this.players.Length];
+    public virtual DominoPlayer GetWinner() {
+        int[] playerScores = new int[this.players.Count];
 
-        for(int i = 0; i < this.players.Length; i++)
+        for(int i = 0; i < this.players.Count; i++)
         {
             playerScores[i] += this.playerTokens[i].Sum(token => token.Value());
         }
 
-        return this.players[Array.IndexOf(playerScores, playerScores.Max())];
+        return this.players[Array.IndexOf(playerScores, playerScores.Min())];
     }
 
     protected virtual void NextPlayer() {
-        if (this.currentPlayer == this.players.Length - 1)
+        if (this.currentPlayer == this.players.Count - 1)
             this.currentPlayer = 0;
         else
             this.currentPlayer++;
@@ -136,37 +131,12 @@ public class DominoGame {
         
         foreach(DominoMove move in this.moves)
             System.Console.WriteLine(move);
-        System.Console.WriteLine(GetWinner());
+        System.Console.WriteLine($"Winner: {GetWinner()}");
+        System.Console.WriteLine(this.moves.Count);
     }
 }
 
-internal class DominoPlayer {
-    string identifier;
-    public DominoPlayer(string name) {
-        this.identifier = name;
-    }
-    public virtual DominoMove PlayToken(
-        IEnumerable<DominoToken> tokens, IEnumerable<DominoMove> moves, int[] freeValues
-    ) {
-        IEnumerable<DominoToken> availableTokens = tokens.Where(
-            token => DominoMove.IsValid(token, freeValues)
-        );
-
-        DominoToken selected = availableTokens.OrderBy(token => token.Value()).First();
-
-        return new DominoMove(this, selected);
-    }
-
-    public virtual DominoToken PlayStartToken(IEnumerable<DominoToken> tokens) {
-        return tokens.First();
-    }
-
-    public override string ToString() {
-        return this.identifier;
-    }
-}
-
-class DominoMove {
+public class DominoMove {
     public DominoPlayer Player { get; }
     public DominoToken Token { get; }
 
@@ -183,44 +153,5 @@ class DominoMove {
 
     public override string ToString() {
         return $"{this.Player.ToString()} => {this.Token.ToString()}";
-    }
-}
-
-class DominoToken {
-    public int Left { get; }
-    public int Right { get; }
-
-    public DominoToken(int left, int right) {
-        this.Left = left;
-        this.Right = right;
-    }
-    public int Value() {
-        return Left + Right;
-    }
-
-    public override string ToString()
-    {
-        return $"({Left} | {Right})";
-    }
-}
-
-static class Utils {
-    public static void GenerateVariations(int n, int[] variation, int length, List<int[]> collection) {
-        if (length == variation.Length) {
-            collection.Add(new int[] {variation[0], variation[1]});
-            return;
-        }
-        for (int i = 0; i <= n; i++) {
-            variation[length] = i;
-            GenerateVariations(n, variation, length + 1, collection);
-        }
-    }
-
-    public static void GenerateTokenValues(int n, List<int[]> collection) {
-        for (int i = 0; i <= n; i++) {
-            for (int j = i; j <= n; j++) {
-                collection.Add(new int[]{i, j});
-            }
-        }
     }
 }
