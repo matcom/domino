@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domino", "Domino\Domino.csproj", "{B79EB757-05B5-44DC-ADAA-EB3EE07FB9FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{AA1AB19D-39CC-4C9E-8413-1E70217BEB7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{B79EB757-05B5-44DC-ADAA-EB3EE07FB9FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B79EB757-05B5-44DC-ADAA-EB3EE07FB9FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B79EB757-05B5-44DC-ADAA-EB3EE07FB9FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA1AB19D-39CC-4C9E-8413-1E70217BEB7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA1AB19D-39CC-4C9E-8413-1E70217BEB7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA1AB19D-39CC-4C9E-8413-1E70217BEB7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA1AB19D-39CC-4C9E-8413-1E70217BEB7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
