@@ -18,10 +18,10 @@ public class DominoGame {
         this.currentPlayer = 0;
         this.freeValues = new int[2];
         this.players = new DominoPlayer[]{
-            new DominoPlayer("Player 1"), 
-            new DominoPlayer("Player 2"), 
-            new DominoPlayer("Player 3"), 
-            new DominoPlayer("Player 4")
+            new GreedyDominoPlayer("Player 1"), 
+            new RandomDominoPlayer("Player 2"), 
+            new RandomDominoPlayer("Player 3"), 
+            new GreedyDominoPlayer("Player 4")
         };
         this.playerTokens = new IEnumerable<DominoToken>[this.players.Length];
         this.moves = new List<DominoMove>();
