@@ -4,7 +4,7 @@ using Domino.Utils;
 
 namespace Domino.Game;
 
-public class DominoGame {
+public class DominoGame<TToken> where TToken : DominoToken {
     DominoPlayer[] players;
     IEnumerable<DominoToken>[] playerTokens;
     List<DominoMove> moves;
@@ -14,7 +14,7 @@ public class DominoGame {
     int passCounter = 0;
     bool ended = false;
 
-    public DominoGame(int tokenValues, int tokenAmount) {
+    public DominoGame(int tokenValues, int tokenAmount, ITokenGenerator<TToken> generator) {
         this.currentPlayer = 0;
         this.freeValues = new int[2];
         this.players = new DominoPlayer[]{
@@ -27,14 +27,7 @@ public class DominoGame {
         this.playerTokens = new IEnumerable<DominoToken>[this.players.Length];
         this.moves = new List<DominoMove>();
 
-        List<int[]> tokenValuesList = new List<int[]>();
-        List<DominoToken> tokens = new List<DominoToken>();
-
-        Utils.Utils.GenerateTokenValues(tokenValues, tokenValuesList);
-        
-        foreach(int[] values in tokenValuesList) {
-            tokens.Add(new DominoToken(values[0], values[1]));
-        }
+        IList<TToken> tokens = generator.GenerateTokens(tokenValues);
 
         for(int i = 0; i < this.players.Length; i++) {
             List<DominoToken> playerTokenList = new List<DominoToken>();
@@ -142,6 +135,7 @@ public class DominoGame {
         foreach(DominoMove move in this.moves)
             System.Console.WriteLine(move);
         System.Console.WriteLine($"Winner: {GetWinner()}");
+        System.Console.WriteLine(this.moves.Count);
     }
 }
 

@@ -9,7 +9,7 @@ public class DominoToken {
         this.Right = right;
     }
     public virtual int Value() {
-        return Left + Right;
+        return this.Left + this.Right;
     }
 
     public override string ToString()
@@ -25,10 +25,10 @@ public class SixUnvaluableDominoToken : DominoToken {
     {
         int value = 0;
 
-        if (Right != 6)
-            value += Right;
-        if (Left != 6)
-            value += Left;
+        if (this.Right != 6)
+            value += this.Right;
+        if (this.Left != 6)
+            value += this.Left;
 
         return value;
     }
@@ -38,6 +38,25 @@ public class DoubledValueDominoToken : DominoToken {
     public DoubledValueDominoToken(int left, int right) : base(left, right) {}
     public override int Value()
     {
-        return  2 * (Left + Right);
+        return  2 * (this.Left + this.Right);
+    }
+}
+
+public interface ITokenGenerator<TToken> where TToken : DominoToken {
+    public IList<TToken> GenerateTokens(int tokenValues);
+}
+
+public class DominoTokenGenerator : ITokenGenerator<DominoToken> {
+    public IList<DominoToken> GenerateTokens(int tokenValues) {
+        List<int[]> tokenValuesList = new List<int[]>();
+        List<DominoToken> tokens = new List<DominoToken>();
+
+        Utils.Utils.GenerateTokenValues(tokenValues, tokenValuesList);
+        
+        foreach(int[] values in tokenValuesList) {
+            tokens.Add(new DominoToken(values[0], values[1]));
+        }
+
+        return tokens;
     }
 }
