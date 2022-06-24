@@ -23,6 +23,7 @@ public class DominoGame {
             new RandomDominoPlayer("Player 3"), 
             new GreedyDominoPlayer("Player 4")
         };
+
         this.playerTokens = new IEnumerable<DominoToken>[this.players.Length];
         this.moves = new List<DominoMove>();
 
@@ -89,7 +90,7 @@ public class DominoGame {
             playerScores[i] += this.playerTokens[i].Sum(token => token.Value());
         }
 
-        return this.players[Array.IndexOf(playerScores, playerScores.Max())];
+        return this.players[Array.IndexOf(playerScores, playerScores.Min())];
     }
 
     protected virtual void NextPlayer() {
