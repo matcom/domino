@@ -14,7 +14,7 @@ public class Program
         foreach (var GameEstate in game)
         {
             System.Console.WriteLine(GameEstate);
-            Console.ReadLine();
+            // Console.ReadLine();
         }
 
         Console.ReadLine();

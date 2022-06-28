@@ -31,7 +31,7 @@ public class ClassicFinisher<T> : IFinisher<T>
     public bool AllCheck(Partida<T> partida)
     {
         foreach (var player in partida.Players()){
-            if (partida.Board.Count < partida.Players().Count() 
+            if (partida.Board.Count <= partida.Players().Count() 
                 || !partida.Board.Where(x => x.PlayerId == partida.PlayerId(player)).Last().Check) 
                 return false;
         }
@@ -62,6 +62,7 @@ public class ClassicMatcher<T> : IMatcher<T>
 
     private bool CanMatch(Partida<T> partida, Move<T> move)
     {
+        if (partida.Board.Count == 0) return true;
         if (move.Check) return true;
         foreach (var validturn in validsTurns[partida]!.Where(x => x == move.Turn)) {
             if (validturn == -1) return partida.Board[0].Head!.Equals(move.Head);
@@ -84,7 +85,7 @@ public class ClassicMatcher<T> : IMatcher<T>
 
 public class LonganaMatcher<T> : IMatcher<T>
 {
-    Dictionary<Partida<T>, Dictionary<int, List<int>>> validsTurns = new();
+    Dictionary<Partida<T>, Dictionary<int, List<(int turn, int player)>>> validsTurns = new();
 
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable) {
         ValidsTurn(partida, enumerable.First().PlayerId);
@@ -94,10 +95,11 @@ public class LonganaMatcher<T> : IMatcher<T>
 
     private bool CanMatch(Partida<T> partida, Move<T> move) {
         // Permite salir solo con fichas dobles
-        if (partida.Board.Count == 0) return move.Head!.Equals(move.Tail);
+        if (partida.Board.Count() == 0) return move.Head!.Equals(move.Tail);
 
         // Valida movimientos si estan disponibles y cumplen la condicion de longana
-        foreach (var validturn in validsTurns[partida][move.PlayerId].Where(x => x == move.Turn)) {
+        foreach (var validturn in validsTurns[partida][move.PlayerId].Select(x => x.turn).Where(x => x == move.Turn)) {
+            if (validturn == -1) return partida.Board[0].Head!.Equals(move.Head);
             return partida.Board[validturn].Tail!.Equals(move.Head);
         }
         
@@ -108,25 +110,66 @@ public class LonganaMatcher<T> : IMatcher<T>
     {
         // Agregamos una nueva partida al diccionario de partidas si no existe
         if (!validsTurns.ContainsKey(partida)) {
-            validsTurns.Add(partida, new Dictionary<int, List<int>>());
-            partida.Players().Select(x => partida.PlayerId(x)).Make(x => validsTurns[partida].Add(x, new List<int>(){0}));
+            validsTurns.Add(partida, new Dictionary<int, List<(int, int)>>());
+            partida.Players().Select(x => partida.PlayerId(x)).Make(x => validsTurns[partida].
+            Add(x, new List<(int, int)>(){(-1, x)}));
+            // validsTurns[partida][player].Add((-1, player));
         }
 
+        // // Si el player nunca ha jugado, se le añade una referencia a la salida
+        // if (validsTurns[partida][player].IsEmpty())
+        //     validsTurns[partida][player].Add((0, player));
+
         // Eliminamos los turnos que ya no se pueden usar
-        validsTurns[partida].Where(x => x.Key != player).Make(x => x.Value.Remove(validsTurns[partida][player].MaxBy(x => x)));
+        validsTurns[partida].Where(x => x.Key != player).
+        Make(x => x.Value.Remove(validsTurns[partida][player].Where(x => x.player == player).First()));
+        // if (validsTurns[partida][player].Select(x => x.Item1).MaxBy(x => x) != -1)
+        //     validsTurns[partida].Where(x => x.Key != player).
+        //     Make(x => x.Value.Remove(validsTurns[partida][player].MaxBy(x => x)));
 
         // Por cada jugador que se paso, agregamos un turno valido
         foreach (var playerId in partida.Players().Select(x => partida.PlayerId(x)).Where(x => x != player)) {
+            if (partida.Board.Where(x => x.PlayerId == playerId).Count() == 0) 
+                continue;
             var lastmove = partida.Board.Where(x => x.PlayerId == playerId).Last();
             if (lastmove.Check)
-                validsTurns[partida][player].Add(lastmove.Turn);
+                validsTurns[partida][player].Add(validsTurns[partida][playerId].
+                Where(x => x.player == playerId).MaxBy(x => x.Item1));
         }
 
         // Actualiza los ultimos cambios en el tablero
-        foreach (var (i,move) in partida.Board.Enumerate().Where(x => x.Item1 >= 1 &&
-                x.Item1 > validsTurns[partida].SelectMany(x => x.Value).MaxBy(x => x))) {
-            validsTurns[partida][player].Remove(move.Turn);
-            validsTurns[partida][player].Add(i);
+        foreach (var (i,move) in partida.Board.Enumerate().Where(x => x.Item1 > validsTurns[partida].
+                SelectMany(x => x.Value).MaxBy(x => x.Item1).Item1 && !x.Item2.Check)) {
+            // Si es el primer movimiento del juego, solo modificamos a un jugador
+            if (i is 0 || move.Turn is -1) {
+                validsTurns[partida][move.PlayerId] = new List<(int turn, int player)>() {(i, move.PlayerId)};
+                continue;
+            }
+
+            // Sino modificamos a todos los que sean necesarios
+            var turn_owner = validsTurns[partida].Where(x => x.Value.Contains((move.Turn, x.Key))).First().Key;
+            foreach (var player_ in partida.Players().Select(x => partida.PlayerId(x))) {
+                if (move.PlayerId == turn_owner && move.PlayerId == player_){
+                    validsTurns[partida][player_].Remove((move.Turn, move.PlayerId));
+                    validsTurns[partida][player_].Add((i, player_));
+                }
+                else
+                    if (validsTurns[partida][player_].RemoveAll(x => x.turn == move.Turn) > 0)
+                        validsTurns[partida][player_].Add((i, turn_owner));
+            }
+
+            // if {
+            //     foreach (var player_ in partida.Players().Select(x => partida.PlayerId(x))){
+            //         var tuple = validsTurns[partida][player_].Where(x => x.player == player_).First();
+            //         if (validsTurns[partida][player_].RemoveAll(x => x.turn == move.Turn) > 0){
+            //             if (tuple == (move.Turn, move.PlayerId))
+            //                 validsTurns[partida][player_].Add((i, player_));
+            //             // Añandir nuevo turno disponible solo si
+            //             if (player_ != move.PlayerId)
+            //                 validsTurns[partida][player_].Add((i, player_));
+            //         }
+            //     }
+            // }
         }
     }
 }

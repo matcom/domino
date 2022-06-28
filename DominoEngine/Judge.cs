@@ -26,14 +26,11 @@ public class Judge<T> {
 	}
 
 	public IEnumerable<Player<T>> Play(Partida<T> partida) {
-		foreach (var (i, player) in _turner.Players(partida!).Enumerate()) {
+		foreach (var (i, player) in _turner.Players(partida!).Enumerate().SkipWhile(x => Salir(partida, x.Item2))) {
 			yield return player;
+			if (i is 0) continue;
 			if (_finisher.GameOver(partida!))
 				yield break;
-			if (i is 0) {
-				Salir(partida, player);
-				continue;
-			}
 
 			var validMoves = GenValidMoves(partida, player).ToHashSet();
 			var move = player.Play(validMoves, partida!.Board, x => partida.InHand(x), x => _scorer.Scorer(partida!, x));
@@ -43,12 +40,14 @@ public class Judge<T> {
 		}
 	}
 
-	private void Salir(Partida<T> partida, Player<T> player) {
+	private bool Salir(Partida<T> partida, Player<T> player) {
 		var validMoves = GenSalidas(partida, player).ToHashSet();
+		if (validMoves.IsEmpty()) return true;
 		var move = player.Play(validMoves, partida!.Board, x => partida.InHand(x), x => _scorer.Scorer(partida!, x));
 		if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
 		if (!move!.Check) partida!.RemoveFromHand(player, move.Ficha!);
 		partida!.AddMove(move!);
+		return false;
 	}
 
 	private IEnumerable<Move<T>> GenMoves(Partida<T> partida, Player<T> player) {
@@ -69,9 +68,9 @@ public class Judge<T> {
 
 	private IEnumerable<Move<T>> GenSalidas(Partida<T> partida, Player<T> player) {
 		var id = partida!.PlayerId(player);
-		foreach (var ficha in partida.Hand(player)) {
-			yield return new Move<T>(id, false, -2, ficha.Head, ficha.Tail);
-		}
+		foreach (var move in _matcher.CanMatch(partida, partida.Hand(player).
+				Select(x => new Move<T>(id, false, -1, x.Head, x.Tail))))
+			yield return move;
 	}
 
 	internal Team<T> Winner(Partida<T> partida) => _scorer.Winner(partida);
@@ -80,5 +79,5 @@ public class Judge<T> {
 public class ClassicJudge : Judge<int>
 {
     public ClassicJudge() : base(new ClassicGenerator(10), new ClassicDealer<int>(10), 
-		new ClassicTurner<int>(), new ClassicMatcher<int>(), new ClassicScorer(), new ClassicFinisher<int>()) { }
+		new ClassicTurner<int>(), new LonganaMatcher<int>(), new ClassicScorer(), new ClassicFinisher<int>()) { }
 }
