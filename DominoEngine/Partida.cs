@@ -33,8 +33,8 @@ public class Partida<T> {
 	internal void SetHand(Player<T> player, Hand<T> hand) => Hands.Add(player, hand.Clone());
 
 	internal IEnumerable<Player<T>> Players() {
-		foreach (var team in _teams.SelectMany(x => x))
-			yield return team;
+		foreach (var player in _teams.SelectMany(x => x))
+			yield return player;
 	}
 
     internal Dictionary<Player<T>, Hand<T>> Hands => _hands;

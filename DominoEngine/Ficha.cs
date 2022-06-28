@@ -23,4 +23,9 @@ public struct Ficha<T> {
 		head = Head;
 		tail = Tail;
 	}
+
+    public override string ToString()
+    {
+        return $"({Head}|{Tail})";
+    }
 }
