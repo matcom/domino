@@ -1,18 +1,39 @@
+using System.Collections;
+
 namespace DominoEngine;
 
 public class ClassicScorer : IScorer<int>
 {
-    public ClassicScorer() { }
-
-    public double Scorer(Partida<int> partida, Move<int> move)
-    {
-        return move.Head + move.Tail;
-    }
+    public double Scorer(Partida<int> partida, Move<int> move) => TokenScorer(move.Ficha);
 
     public double TokenScorer(Ficha<int> token) => token.Head + token.Tail;
 
-    public Team<int> Winner(Partida<int> partida)
-    {
+    public Team<int> Winner(Partida<int> partida) {
+        foreach (var player in partida.Players().Where(x => partida.Hands[x].IsEmpty()))
+            return partida.TeamOf(player);
+        return partida.TeamOf(partida.Hands.MinBy(x => x.Value.Sum(x => TokenScorer(x))).Key);
+    }
+}
+
+public class InverseScorer<T> : IScorer<T>
+{
+    private IScorer<T> _scorer;
+
+    public InverseScorer(IScorer<T> scorer) {
+        _scorer = scorer;
+    }
+
+    public double Scorer(Partida<T> partida, Move<T> move) {
+        if (_scorer.Scorer(partida, move) is 0) return int.MaxValue;
+        else return 1 / (_scorer.Scorer(partida, move));
+    }
+
+    public double TokenScorer(Ficha<T> token) {
+        if (_scorer.TokenScorer(token) is 0) return int.MaxValue;
+        else return 1 / (_scorer.TokenScorer(token));
+    }
+
+    public Team<T> Winner(Partida<T> partida) {
         foreach (var player in partida.Players().Where(x => partida.Hands[x].IsEmpty()))
             return partida.TeamOf(player);
         return partida.TeamOf(partida.Hands.MinBy(x => x.Value.Sum(x => TokenScorer(x))).Key);
@@ -21,26 +42,21 @@ public class ClassicScorer : IScorer<int>
 
 public class ClassicFinisher<T> : IFinisher<T>
 {
-    public ClassicFinisher() { }
-
-    public bool GameOver(Partida<T> partida)
-    {
+    public bool GameOver(Partida<T> partida) {
         return AllCheck(partida) || PlayerEnd(partida);
     }
 
-    public bool AllCheck(Partida<T> partida)
-    {
-        foreach (var player in partida.Players()){
-            if (partida.Board.Count <= partida.Players().Count() 
-                || !partida.Board.Where(x => x.PlayerId == partida.PlayerId(player)).Last().Check) 
+    public bool AllCheck(Partida<T> partida) {
+        foreach (var player in partida.Players()) {
+            if (partida.Board.Where(x => x.PlayerId == partida.PlayerId(player)).Count() is 0
+                || !partida.Board.Where(x => x.PlayerId == partida.PlayerId(player)).Last().Check)
                 return false;
         }
 
         return true;
     }
 
-    public bool PlayerEnd(Partida<T> partida)
-    {
+    public bool PlayerEnd(Partida<T> partida) {
         foreach (var player in partida.Players())
             if (partida.Hand(player).Count() == 0) return true;
 
@@ -52,67 +68,82 @@ public class ClassicMatcher<T> : IMatcher<T>
 {
     Dictionary<Partida<T>, List<int>> validsTurns = new();
 
-    public ClassicMatcher() { }
-
-    public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable) {
+    public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
+            Func<Ficha<T>, double> token_scorer) {
         ValidsTurn(partida);
         var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x));
-        return (enume.IsEmpty())? enumerable.Where(x => x.Check) : enume;
+        return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
     }
 
-    private bool CanMatch(Partida<T> partida, Move<T> move)
-    {
+    private bool CanMatch(Partida<T> partida, Move<T> move) {
+        // Permite salir con cualquier ficha
         if (partida.Board.Count == 0) return true;
-        if (move.Check) return true;
-        foreach (var validturn in validsTurns[partida]!.Where(x => x == move.Turn)) {
+        foreach (var validturn in validsTurns[partida]!.Where(x => x == move.Turn))
+        {
             if (validturn == -1) return partida.Board[0].Head!.Equals(move.Head);
             return partida.Board[validturn].Tail!.Equals(move.Head);
         }
         return false;
     }
 
-    private void ValidsTurn(Partida<T> partida)
-    {
-        if (!validsTurns.ContainsKey(partida)) validsTurns.Add(partida, new List<int>(){0, -1});
+    private void ValidsTurn(Partida<T> partida) {
+        // Si no existe añadimos una partida nueva al diccionario
+        if (!validsTurns.ContainsKey(partida)) validsTurns.Add(partida, new List<int>() { 0, -1 });
 
-        foreach (var (i,move) in partida.Board.Enumerate().Where(x => !x.Item2.Check &&
-                x.Item1 > validsTurns[partida].MaxBy(x => x) && x.Item1 >= 1)) {
+        // Actuliza los turnos validos de la forma clasica
+        foreach (var (i, move) in partida.Board.Enumerate().Where(x => !x.Item2.Check &&
+                x.Item1 > validsTurns[partida].MaxBy(x => x) && x.Item1 >= 1))
+        {
             validsTurns[partida].Remove(move.Turn);
             validsTurns[partida].Add(i);
         }
     }
 }
 
-public class LonganaMatcher<T> : IMatcher<T>
+public class InverseMatcher<T> : IMatcher<T>
 {
-    Dictionary<Partida<T>, Dictionary<int, List<(int turn, int player)>>> validsTurns = new();
+    private IMatcher<T> _matcher;
 
-    public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable) {
-        ValidsTurn(partida, enumerable.First().PlayerId);
-        var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x));
-        return (enume.IsEmpty())? enumerable.Where(x => x.Check) : enume;
+    public InverseMatcher(IMatcher<T> matcher)
+    {
+        _matcher = matcher;
     }
 
-    private bool CanMatch(Partida<T> partida, Move<T> move) {
-        // Permite salir solo con fichas dobles
-        if (partida.Board.Count() == 0) return move.Head!.Equals(move.Tail);
+    public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
+            Func<Ficha<T>, double> token_scorer)
+        => enumerable.Complement(_matcher.CanMatch(partida, enumerable, token_scorer));
+}
+
+public class LonganaMatcher<T> : IMatcher<T> {
+    Dictionary<Partida<T>, Dictionary<int, List<(int turn, int player)>>> validsTurns = new();
+
+    public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
+            Func<Ficha<T>, double> token_scorer) {
+        ValidsTurn(partida, enumerable.First().PlayerId);
+        var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x, token_scorer));
+        return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
+    }
+
+    private bool CanMatch(Partida<T> partida, Move<T> move, Func<Ficha<T>, double> token_scorer) {
+        // Permite salir solo con la mayor de las fichas dobles
+        var higher = partida.Hands.SelectMany(x => x.Value).Where(x => x.Head!.Equals(x.Tail)).MaxBy(x => token_scorer(x));
+        if (partida.Board.Count() == 0) return move.Ficha.Equals(higher!);
 
         // Valida movimientos si estan disponibles y cumplen la condicion de longana
         foreach (var validturn in validsTurns[partida][move.PlayerId].Select(x => x.turn).Where(x => x == move.Turn)) {
             if (validturn == -1) return partida.Board[0].Head!.Equals(move.Head);
             return partida.Board[validturn].Tail!.Equals(move.Head);
         }
-        
+
         return false;
     }
 
-    private void ValidsTurn(Partida<T> partida, int player)
-    {
+    private void ValidsTurn(Partida<T> partida, int player) {
         // Agregamos una nueva partida al diccionario de partidas si no existe
         if (!validsTurns.ContainsKey(partida)) {
             validsTurns.Add(partida, new Dictionary<int, List<(int, int)>>());
             partida.Players().Select(x => partida.PlayerId(x)).Make(x => validsTurns[partida].
-            Add(x, new List<(int, int)>(){(-1, x)}));
+            Add(x, new List<(int, int)>() { (-1, x) }));
         }
 
         // Eliminamos los turnos que ya no se pueden usar
@@ -121,7 +152,7 @@ public class LonganaMatcher<T> : IMatcher<T>
 
         // Por cada jugador que se paso, agregamos un turno valido
         foreach (var playerId in partida.Players().Select(x => partida.PlayerId(x)).Where(x => x != player)) {
-            if (partida.Board.Where(x => x.PlayerId == playerId).Count() == 0) 
+            if (partida.Board.Where(x => x.PlayerId == playerId).Count() == 0)
                 continue;
             var lastmove = partida.Board.Where(x => x.PlayerId == playerId).Last();
             if (lastmove.Check)
@@ -130,56 +161,132 @@ public class LonganaMatcher<T> : IMatcher<T>
         }
 
         // Actualiza los ultimos cambios en el tablero
-        foreach (var (i,move) in partida.Board.Enumerate().Where(x => x.Item1 > validsTurns[partida].
+        foreach (var (i, move) in partida.Board.Enumerate().Where(x => x.Item1 > validsTurns[partida].
                 SelectMany(x => x.Value).MaxBy(x => x.Item1).Item1 && !x.Item2.Check)) {
             // Si es el primer movimiento del juego, solo modificamos a un jugador
             if (i is 0 || move.Turn is -1) {
-                validsTurns[partida][move.PlayerId] = new List<(int turn, int player)>() {(i, move.PlayerId)};
+                validsTurns[partida][move.PlayerId] = new List<(int turn, int player)>() { (i, move.PlayerId) };
                 continue;
             }
 
             // Sino modificamos a todos los que sean necesarios
             var turn_owner = validsTurns[partida].Where(x => x.Value.Contains((move.Turn, x.Key))).First().Key;
             foreach (var player_ in partida.Players().Select(x => partida.PlayerId(x))) {
-                if (move.PlayerId == turn_owner && move.PlayerId == player_){
+                // Actualiza si el turno fue jugado por el dueño de la rama
+                if (move.PlayerId == turn_owner && move.PlayerId == player_) {
                     validsTurns[partida][player_].Remove((move.Turn, move.PlayerId));
                     validsTurns[partida][player_].Add((i, player_));
                 }
+                // Actualiza si el turno no fue jugado por el dueño de la rama
                 else
                     if (validsTurns[partida][player_].RemoveAll(x => x.turn == move.Turn) > 0)
-                        validsTurns[partida][player_].Add((i, turn_owner));
+                    validsTurns[partida][player_].Add((i, turn_owner));
             }
         }
     }
+}
+
+public class EvenOddMatcher : IMatcher<int>
+{
+    public IEnumerable<Move<int>> CanMatch(Partida<int> partida, IEnumerable<Move<int>> enumerable, 
+            Func<Ficha<int>, double> token_scorer) {
+        var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x, token_scorer));
+        return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
+    }
+
+    // Devuelve true si la ficha y el turno tienen la misma paridad
+    private bool CanMatch(Partida<int> partida, Move<int> move, Func<Ficha<int>, double> token_scorer)
+        => (int)token_scorer(move.Ficha) %2  == partida.Board.Count % 2;
 }
 
 public class ClassicTurner<T> : ITurner<T>
 {
     public ClassicTurner() { }
 
-    public IEnumerable<Player<T>> Players(Partida<T> partida)
-    {
+    public IEnumerable<Player<T>> Players(Partida<T> partida) {
         while (true)
             foreach (var player in partida!.Players())
                 yield return player;
     }
 }
 
+public class NPassesReverse<T> : ITurner<T>
+{
+    private int _n;
+
+    public NPassesReverse(int n) {
+        _n = n;
+    }
+
+    public IEnumerable<Player<T>> Players(Partida<T> partida) {
+        int passes = 0;
+        ReversibleIenumerator enumerator = new ReversibleIenumerator(partida.Players());
+
+        while (enumerator.MoveNext()) {
+            yield return enumerator.Current;
+            if (partida.Board.Where(x => x.Check).Count() != passes &&
+            partida.Board.Where(x => x.Check).Count() % _n is 0) {
+                enumerator.Direction();
+                passes += partida.Board.Where(x => x.Check).Count();
+            }
+        }
+    }
+
+    class ReversibleIenumerator : IEnumerator<Player<T>> {
+        private bool _direction = true;
+        IEnumerable<Player<T>> _items;
+        private int _current = -1;
+
+        public ReversibleIenumerator(IEnumerable<Player<T>> items) {
+            _items = items;
+        }
+
+        public Player<T> Current {
+            get 
+            {
+                if (_current == _items.Count())
+                    _current = 0;
+                else if (_current == -1)
+                    _current = _items.Count() - 1;
+                return _items.ElementAt(_current);
+            }
+        }
+
+        public void Direction() => _direction = !_direction;
+
+        object IEnumerator.Current => Current!;
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool MoveNext(){
+            _current += _direction? 1 : -1;
+            return true;
+        }
+
+        public void Reset()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+
 public class ClassicDealer<T> : IDealer<T>
 {
     int _pieceForPlayers;
-    public ClassicDealer(int piecesForPlayers)
-    {
+    public ClassicDealer(int piecesForPlayers) {
         _pieceForPlayers = piecesForPlayers;
     }
 
-    public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas)
-    {
+    public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas) {
         Dictionary<Player<T>, Hand<T>> hands = new();
         Random r = new Random();
-        var enumerator = fichas.OrderBy(x => r.NextDouble()-0.5).GetEnumerator();
+        var enumerator = fichas.OrderBy(x => r.NextDouble() - 0.5).GetEnumerator();
 
-        foreach (var player in partida.Players()){
+        foreach (var player in partida.Players())
+        {
             var hand = new Hand<T>();
             var count = 0;
             while (count++ < _pieceForPlayers && enumerator.MoveNext())
@@ -195,18 +302,16 @@ public class ClassicGenerator : IGenerator<int>
 {
     int _number;
 
-    public ClassicGenerator(int number)
-    {
+    public ClassicGenerator(int number) {
         _number = number;
     }
 
-    IEnumerable<Ficha<int>> IGenerator<int>.Generate()
-    {
+    IEnumerable<Ficha<int>> IGenerator<int>.Generate() {
         List<Ficha<int>> fichas = new List<Ficha<int>>();
 
         for (int i = 0; i < _number; i++)
             for (int j = i; j < _number; j++)
-                fichas.Add(new Ficha<int>(i,j));
+                fichas.Add(new Ficha<int>(i, j));
 
         return fichas;
     }

@@ -64,12 +64,12 @@ public class Judge<T> {
 	}
 
 	private IEnumerable<Move<T>> GenValidMoves(Partida<T> partida, Player<T> player) =>
-		_matcher.CanMatch(partida!, GenMoves(partida, player));
+		_matcher.CanMatch(partida!, GenMoves(partida, player), _scorer.TokenScorer);
 
 	private IEnumerable<Move<T>> GenSalidas(Partida<T> partida, Player<T> player) {
 		var id = partida!.PlayerId(player);
 		foreach (var move in _matcher.CanMatch(partida, partida.Hand(player).
-				Select(x => new Move<T>(id, false, -1, x.Head, x.Tail))))
+				Select(x => new Move<T>(id, false, -1, x.Head, x.Tail)), _scorer.TokenScorer))
 			yield return move;
 	}
 

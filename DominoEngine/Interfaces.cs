@@ -15,7 +15,8 @@ public interface IDealer<T>
 public interface IMatcher<T>
 {
     // Interfaz que se encarga de decidir si dos fichas matchean o no
-    public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable);
+    public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
+            Func<Ficha<T>, double> token_scorer);
 }
 
 public interface ITurner<T>
@@ -34,6 +35,8 @@ public interface IScorer<T>
 {
     // Interfaz que se encarga de puntuar un movimiento en un momento dado de la partida
     public double Scorer(Partida<T> partida, Move<T> move);
+
+    public double TokenScorer(Ficha<T> token);
 
     public Team<T> Winner(Partida<T> partida);
 }
