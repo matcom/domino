@@ -79,5 +79,6 @@ public class Judge<T> {
 public class ClassicJudge : Judge<int>
 {
     public ClassicJudge() : base(new ClassicGenerator(10), new ClassicDealer<int>(10), 
-		new ClassicTurner<int>(), new LonganaMatcher<int>(), new ClassicScorer(), new ClassicFinisher<int>()) { }
+		new ClassicTurner<int>(), new ClassicMatcher<int>(), 
+		new ClassicScorer(), new ClassicFinisher<int>()) { }
 }

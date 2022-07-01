@@ -3,7 +3,7 @@
 namespace DominoEngine;
 
 public class Board<T>: IReadOnlyList<Move<T>> {
-	List<Move<T>> _moves = new(); 
+	readonly List<Move<T>> _moves = new(); 
 
 	public IEnumerator<Move<T>> GetEnumerator() => _moves!.GetEnumerator();
 
@@ -11,9 +11,9 @@ public class Board<T>: IReadOnlyList<Move<T>> {
 
 	public int Count => _moves!.Count;
 
-	public Move<T> this[int index] => _moves![index];
+	public Move<T> this[int index] => _moves[index];
 
-	public void Add(Move<T> item) => _moves!.Add(item);
+	internal void Add(Move<T> item) => _moves!.Add(item);
 
     public override string ToString()
     {

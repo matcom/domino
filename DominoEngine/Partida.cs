@@ -28,6 +28,8 @@ public class Partida<T> {
 
 	internal Team<T> TeamOf(Player<T> player) => _teams.FirstOrDefault(x => x!.Contains(player), default)!;
 
+	internal Team<T> TeamOf(int playerId) => TeamOf(Players().FirstOrDefault(x => x.PlayerId == playerId)!);
+
 	public List<Move<T>> Board => _board.ToList();
 
 	internal void SetHand(Player<T> player, Hand<T> hand) => Hands.Add(player, hand.Clone());
