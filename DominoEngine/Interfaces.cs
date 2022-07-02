@@ -2,21 +2,21 @@
 
 public interface IGenerator<T>
 {
-    // Interfaz que se encarga de generar todas las fichas que estaran en juego
-    public IEnumerable<Ficha<T>> Generate();
+    // Interfaz que se encarga de generar todas las Tokens que estaran en juego
+    public IEnumerable<Token<T>> Generate();
 }
 
 public interface IDealer<T>
 {
-    // Interfaz que se encarga de repartir las fichas a los jugadores
-    public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas);
+    // Interfaz que se encarga de repartir las Tokens a los jugadores
+    public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Token<T>> tokens);
 }
 
 public interface IMatcher<T>
 {
-    // Interfaz que se encarga de decidir si dos fichas matchean o no
+    // Interfaz que se encarga de decidir si dos Tokens matchean o no
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
-            Func<Ficha<T>, double> token_scorer);
+            Func<Token<T>, double> token_scorer);
 }
 
 public interface ITurner<T>
@@ -36,7 +36,7 @@ public interface IScorer<T>
     // Interfaz que se encarga de puntuar un movimiento en un momento dado de la partida
     public double Scorer(Partida<T> partida, Move<T> move);
 
-    public double TokenScorer(Ficha<T> token);
+    public double TokenScorer(Token<T> token);
 
     public Team<T> Winner(Partida<T> partida);
 }

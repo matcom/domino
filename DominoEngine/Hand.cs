@@ -3,32 +3,32 @@ using System.Runtime.ExceptionServices;
 
 namespace DominoEngine; 
 
-public class Hand<T>: ICollection<Ficha<T>> {
-	private readonly List<Ficha<T>> _hand;
+public class Hand<T>: ICollection<Token<T>> {
+	private readonly List<Token<T>> _hand;
 
 	public Hand() {
-		_hand = new List<Ficha<T>>();
+		_hand = new List<Token<T>>();
 	}
 
-	private Hand(IEnumerable<Ficha<T>> hand) {
+	private Hand(IEnumerable<Token<T>> hand) {
 		_hand = hand.ToList();
 	}
-	public IEnumerator<Ficha<T>> GetEnumerator() => _hand.GetEnumerator();
+	public IEnumerator<Token<T>> GetEnumerator() => _hand.GetEnumerator();
 
 	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-	public void Add(Ficha<T> item) => _hand.Add(item);
+	public void Add(Token<T> item) => _hand.Add(item);
 
 	public void Clear() => _hand.Clear();
 
-	public bool Contains(Ficha<T> item) => _hand.Contains(item);
+	public bool Contains(Token<T> item) => _hand.Contains(item);
 
-	public void CopyTo(Ficha<T>[] array, int arrayIndex) => _hand.CopyTo(array,arrayIndex);
+	public void CopyTo(Token<T>[] array, int arrayIndex) => _hand.CopyTo(array,arrayIndex);
 
-	public bool Remove(Ficha<T> item){
-		foreach (var ficha in _hand)
-			if (item.Equals(ficha))
-				return _hand.Remove(ficha);
+	public bool Remove(Token<T> item){
+		foreach (var token in _hand)
+			if (item.Equals(token))
+				return _hand.Remove(token);
 		return false;
 	}
 
@@ -39,8 +39,8 @@ public class Hand<T>: ICollection<Ficha<T>> {
     public override string ToString()
     {
 		string result = "";
-        foreach (var ficha in _hand)
-			result += " " + ficha.ToString() + ",";
+        foreach (var token in _hand)
+			result += " " + token.ToString() + ",";
 		return (this.Count == 0)? "" : result.Substring(1, result.Length-2);
     }
 }

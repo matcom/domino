@@ -11,13 +11,13 @@ public class Partida<T> {
 
 	internal void AddMove(Move<T> move) => _board.Add(move);
 
-	internal bool InHand(Player<T> player, Ficha<T> ficha) =>
-		Hands.ContainsKey(player) && Hands[player].Contains(ficha);
+	internal bool InHand(Player<T> player, Token<T> token) =>
+		Hands.ContainsKey(player) && Hands[player].Contains(token);
 
-	internal bool RemoveFromHand(Player<T> player, Ficha<T> ficha) =>
-		Hands.ContainsKey(player) && Hands[player].Remove(ficha);
+	internal bool RemoveFromHand(Player<T> player, Token<T> token) =>
+		Hands.ContainsKey(player) && Hands[player].Remove(token);
 
-	internal IEnumerable<Ficha<T>> Hand(Player<T> player) => Hands[player].Clone();
+	internal IEnumerable<Token<T>> Hand(Player<T> player) => Hands[player].Clone();
 
 	internal int PlayerId(Player<T> player) => player.PlayerId;
 
@@ -34,10 +34,9 @@ public class Partida<T> {
 
 	internal void SetHand(Player<T> player, Hand<T> hand) => Hands.Add(player, hand.Clone());
 
-	internal IEnumerable<Player<T>> Players() {
-		foreach (var player in _teams.SelectMany(x => x))
-			yield return player;
-	}
+	internal IEnumerable<Player<T>> Players() => _teams.SelectMany(x => x);
+
+	internal IEnumerable<Team<T>> Teams() => _teams;
 
     internal Dictionary<Player<T>, Hand<T>> Hands => _hands;
 }

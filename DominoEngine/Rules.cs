@@ -5,9 +5,10 @@ namespace DominoEngine;
 #region IScorers
 public class ClassicScorer : IScorer<int>
 {
-    public double Scorer(Partida<int> partida, Move<int> move) => TokenScorer(move.Ficha);
+    //Scorer clasico
+    public double Scorer(Partida<int> partida, Move<int> move) => TokenScorer(move.Token);
 
-    public double TokenScorer(Ficha<int> token) => token.Head + token.Tail;
+    public double TokenScorer(Token<int> token) => token.Head + token.Tail;
 
     public Team<int> Winner(Partida<int> partida) {
         foreach (var player in partida.Players().Where(x => partida.Hands[x].IsEmpty()))
@@ -20,14 +21,14 @@ public class ModFiveScorer : IScorer<int>
 {
     // Solo devuelve puntuacion si la suma es divisible por 5
     public double Scorer(Partida<int> partida, Move<int> move) {
-        if ((TokenScorer(partida.Board[move.Turn].Ficha) + TokenScorer(move.Ficha) % 5 is 0))
-            return TokenScorer(partida.Board[move.Turn].Ficha) + TokenScorer(move.Ficha);
+        if ((TokenScorer(partida.Board[move.Turn].Token) + TokenScorer(move.Token) % 5 is 0))
+            return TokenScorer(partida.Board[move.Turn].Token) + TokenScorer(move.Token);
         else return 0;
     }
 
-    public double TokenScorer(Ficha<int> token) => token.Head + token.Tail;
+    public double TokenScorer(Token<int> token) => token.Head + token.Tail;
 
-    // DEvuelve al equipo q tiene al jugador con la mayor puntuacion
+    // Devuelve al equipo que tiene al jugador con la mayor puntuacion
     public Team<int> Winner(Partida<int> partida)
         => partida.TeamOf(partida.Players().MaxBy(player => partida.Board.
             Where(move => move.PlayerId == partida.PlayerId(player) && !move.Check).Sum(move => Scorer(partida, move)))!);
@@ -41,21 +42,21 @@ public class TurnDividesBoardScorer : IScorer<int>
         if (!_scores.ContainsKey(partida))
             _scores.Add(partida, new List<(int turn, int score)>(){(0, 0)});
         if (_scores[partida].Count is 1)
-            return TokenScorer(move.Ficha);
+            return TokenScorer(move.Token);
         else {
             Update(partida);
-            if (_scores[partida].Last().score + TokenScorer(move.Ficha) % (_scores[partida].Last().score + 1) is 0)
-                return _scores[partida].Last().score + TokenScorer(move.Ficha);
+            if (_scores[partida].Last().score + TokenScorer(move.Token) % (_scores[partida].Last().score + 1) is 0)
+                return TokenScorer(move.Token);
             else return 0;
         }
     }
 
     private void Update(Partida<int> partida)
         => partida.Board.Enumerate().Where(pair => !pair.Item2.Check && pair.Item1 > _scores[partida].Count).
-            Make(pair => _scores[partida].Add((pair.Item1, _scores[partida].Last().score + (int)TokenScorer(pair.Item2.Ficha))));
+            Make(pair => _scores[partida].Add((pair.Item1, _scores[partida].Last().score + (int)TokenScorer(pair.Item2.Token))));
 
 
-    public double TokenScorer(Ficha<int> token) => token.Head + token.Tail;
+    public double TokenScorer(Token<int> token) => token.Head + token.Tail;
 
     public Team<int> Winner(Partida<int> partida)
         => partida.TeamOf(partida.Players().MaxBy(player => partida.Board.Enumerate().Where(pair => !pair.Item2.Check 
@@ -63,7 +64,13 @@ public class TurnDividesBoardScorer : IScorer<int>
             Sum(pair => _scores[partida].Where(x => x.turn == pair.Item1).First().score))!);
 }
 
-public class InverseScorer<T> : IScorer<T>
+public static class ScorerExtensors
+{
+    public static IScorer<TSource> Inverse<TSource>(this IScorer<TSource> scorer)
+        => new InverseScorer<TSource>(scorer);
+}
+
+class InverseScorer<T> : IScorer<T>
 {
     private IScorer<T> _scorer;
 
@@ -76,7 +83,7 @@ public class InverseScorer<T> : IScorer<T>
         else return 1 / (_scorer.Scorer(partida, move));
     }
 
-    public double TokenScorer(Ficha<T> token) {
+    public double TokenScorer(Token<T> token) {
         if (_scorer.TokenScorer(token) is 0) return int.MaxValue;
         else return 1 / (_scorer.TokenScorer(token));
     }
@@ -99,28 +106,78 @@ public class ClassicFinisher<T> : IFinisher<T>
 
     public bool AllCheck(Partida<T> partida) {
         foreach (var player in partida.Players()) {
-            if (partida.Board.Where(x => x.PlayerId == partida.PlayerId(player)).Count() is 0
+            if (partida.Board.Where(move => move.PlayerId == partida.PlayerId(player)).IsEmpty()
                 || !partida.Board.Where(x => x.PlayerId == partida.PlayerId(player)).Last().Check)
                 return false;
         }
-
         return true;
     }
 
     public bool PlayerEnd(Partida<T> partida) {
-        foreach (var player in partida.Players())
-            if (partida.Hand(player).Count() == 0) return true;
-
+        foreach (var player in partida.Players().Where(player => partida.Hand(player).IsEmpty()))
+            return true;
         return false;
     }
 }
 
 public class TurnCountFinisher<T> : IFinisher<T>
 {
-    public bool GameOver(Partida<T> partida)
-    {
-        throw new NotImplementedException();
+    int _number;
+    public TurnCountFinisher(int number) {
+        _number = number;
     }
+
+    public bool GameOver(Partida<T> partida)
+        => partida.Board.Where(move => !move.Check).Count() > _number;
+}
+
+public class PassesCountFinisher<T> : IFinisher<T>
+{
+    int _number;
+    public PassesCountFinisher(int number)
+    {
+        _number = number;
+    }
+
+    public bool GameOver(Partida<T> partida)
+        => partida.Board.Where(move => move.Check).Count() > _number;
+}
+
+public static class FinisherExtensors
+{
+    public static IFinisher<TSource> Join<TSource>(this IFinisher<TSource> finisher1, IFinisher<TSource> finisher2)
+        => new JoinFinisher<TSource>(finisher1, finisher2);
+
+    public static IFinisher<TSource> Intersect<TSource>(this IFinisher<TSource> finisher1, IFinisher<TSource> finisher2)
+        => new JoinFinisher<TSource>(finisher1, finisher2);
+}
+
+class IntersectFinisher<T> : IFinisher<T>
+{
+    IFinisher<T> _finisher1;
+    IFinisher<T> _finisher2;
+    public IntersectFinisher(IFinisher<T> finisher1, IFinisher<T> finisher2)
+    {
+        _finisher1 = finisher1;
+        _finisher2 = finisher2;
+    }
+
+    public bool GameOver(Partida<T> partida)
+        => _finisher1.GameOver(partida) && _finisher2.GameOver(partida);
+}
+
+class JoinFinisher<T> : IFinisher<T>
+{
+    IFinisher<T> _finisher1;
+    IFinisher<T> _finisher2;
+    public JoinFinisher(IFinisher<T> finisher1, IFinisher<T> finisher2)
+    {
+        _finisher1 = finisher1;
+        _finisher2 = finisher2;
+    }
+
+    public bool GameOver(Partida<T> partida)
+        => _finisher1.GameOver(partida) || _finisher2.GameOver(partida);
 }
 
 #endregion
@@ -131,15 +188,15 @@ public class ClassicMatcher<T> : IMatcher<T>
     Dictionary<Partida<T>, List<int>> validsTurns = new();
 
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
-            Func<Ficha<T>, double> token_scorer) {
+            Func<Token<T>, double> token_scorer) {
         ValidsTurn(partida);
         var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x));
         return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
     }
 
     private bool CanMatch(Partida<T> partida, Move<T> move) {
-        // Permite salir con cualquier ficha
-        if (partida.Board.Count == 0) return true;
+        // Permite salir con cualquier token
+        if (partida.Board.IsEmpty()) return true;
         foreach (var validturn in validsTurns[partida]!.Where(x => x == move.Turn))
         {
             if (validturn == -1) return partida.Board[0].Head!.Equals(move.Head);
@@ -167,16 +224,16 @@ public class LonganaMatcher<T> : IMatcher<T>
     Dictionary<Partida<T>, Dictionary<int, List<(int turn, int player)>>> validsTurns = new();
 
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
-            Func<Ficha<T>, double> token_scorer) {
+            Func<Token<T>, double> token_scorer) {
         ValidsTurn(partida, enumerable.First().PlayerId);
         var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x, token_scorer));
         return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
     }
 
-    private bool CanMatch(Partida<T> partida, Move<T> move, Func<Ficha<T>, double> token_scorer) {
-        // Permite salir solo con la mayor de las fichas dobles
+    private bool CanMatch(Partida<T> partida, Move<T> move, Func<Token<T>, double> token_scorer) {
+        // Permite salir solo con la mayor de las Tokens dobles
         var higher = partida.Hands.SelectMany(x => x.Value).Where(x => x.Head!.Equals(x.Tail)).MaxBy(x => token_scorer(x));
-        if (partida.Board.Count() == 0) return move.Ficha.Equals(higher!);
+        if (partida.Board.Count() == 0) return move.Token.Equals(higher!);
 
         // Valida movimientos si estan disponibles y cumplen la condicion de longana
         foreach (var validturn in validsTurns[partida][move.PlayerId].Select(x => x.turn).Where(x => x == move.Turn)) {
@@ -235,46 +292,49 @@ public class LonganaMatcher<T> : IMatcher<T>
     }
 }
 
-public class EvenOddMatcher : IMatcher<int>
+public class RelativesPrimesMatcher : IMatcher<int>
 {
     public IEnumerable<Move<int>> CanMatch(Partida<int> partida, IEnumerable<Move<int>> enumerable, 
-            Func<Ficha<int>, double> token_scorer) {
+            Func<Token<int>, double> token_scorer) {
         var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x, token_scorer));
         return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
     }
 
-    // Devuelve true si la ficha y el turno tienen la misma paridad
-    private bool CanMatch(Partida<int> partida, Move<int> move, Func<Ficha<int>, double> token_scorer)
-        => (int)token_scorer(move.Ficha) % 2  == partida.Board.Count % 2;
+    // Matchea solo si la ficha por donde va ajugar y esta tienen sumas primas relativas
+    private bool CanMatch(Partida<int> partida, Move<int> move, Func<Token<int>, double> token_scorer) {
+        if (move.Turn is -1) return true;
+        return MCD((int)token_scorer(partida.Board[move.Turn].Token), (int)token_scorer(move.Token)) is 1;
+    }
+
+    int MCD(int a, int b) {
+        if (a is 0 || b is 0) return 0;
+        if (a % b is 0) return b;
+        return MCD(b, a % b);
+    }
+}
+
+public class EvenOddMatcher : IMatcher<int>
+{
+    public IEnumerable<Move<int>> CanMatch(Partida<int> partida, IEnumerable<Move<int>> enumerable, 
+            Func<Token<int>, double> token_scorer) {
+        var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x, token_scorer));
+        return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
+    }
+
+    // Devuelve true si el token y el turno tienen la misma paridad
+    private bool CanMatch(Partida<int> partida, Move<int> move, Func<Token<int>, double> token_scorer)
+        => (int)token_scorer(move.Token) % 2  == partida.Board.Count % 2;
 }
 
 public class TeamTokenInvalidMatcher<T> : IMatcher<T>
 {
-    // IMatcher<T> _matcher;
-
-    // public TeamTokenInvalidMAtcher(IMatcher<T> matcher)
-    // {
-    //     _matcher = matcher;
-    // }
-
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable, 
-            Func<Ficha<T>, double> token_scorer) {
+            Func<Token<T>, double> token_scorer) {
                 var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x));
                 return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
     }
-    //             // var enume = _matcher.CanMatch(partida, enumerable, token_scorer);
-    //             // var team = partida.TeamOf(enumerable.First().PlayerId);
-    //             // // Si de este equipo aun no ha jugado nadie, juega normalmente
-    //             // if (partida.Board.Where(move => partida.TeamOf(move.PlayerId).Equals(team)).IsEmpty()) 
-    //             //     return enume;
-    //             // else {
-    //             //     // En caso contrario, juega solo por donde por fichas que no puso tu equipo
-    //             //     var new_enum = enume.Where(move => move.Turn > -1 &&
-    //             //     !team.Equals(partida.TeamOf(partida.Board[move.Turn].PlayerId)));
-    //             //     return (new_enum.IsEmpty()) ? enumerable.Where(move => move.Check) : new_enum;
-    //             // }
-    
 
+    // Devuelve false si se quiere jugar por el turno donde jugo uno del mismo equipo
     bool CanMatch(Partida<T> partida, Move<T> move) {
         var team = partida.TeamOf(move.PlayerId);
         if (partida.Board.Where(move => partida.TeamOf(move.PlayerId).Equals(team)).IsEmpty() || move.Turn < 0)
@@ -296,7 +356,7 @@ public static class MatcherExtensors
         => new JoinMatcher<TSource>(matcher1, matcher2);
 }
 
-public class InverseMatcher<T> : IMatcher<T>
+class InverseMatcher<T> : IMatcher<T>
 {
     private IMatcher<T> _matcher;
 
@@ -306,11 +366,13 @@ public class InverseMatcher<T> : IMatcher<T>
     }
 
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
-            Func<Ficha<T>, double> token_scorer)
-        => enumerable.Complement(_matcher.CanMatch(partida, enumerable, token_scorer));
+            Func<Token<T>, double> token_scorer) {
+                var enume = enumerable.Complement(_matcher.CanMatch(partida, enumerable, token_scorer));
+                return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
+            }
 }
 
-public class IntersectMatcher<T> : IMatcher<T>
+class IntersectMatcher<T> : IMatcher<T>
 {
     IMatcher<T> _matcher1; 
     IMatcher<T> _matcher2; 
@@ -321,14 +383,14 @@ public class IntersectMatcher<T> : IMatcher<T>
     }
 
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable, 
-            Func<Ficha<T>, double> token_scorer) {
+            Func<Token<T>, double> token_scorer) {
         var enume = _matcher1.CanMatch(partida, enumerable, token_scorer).
             Intersect(_matcher2.CanMatch(partida, enumerable, token_scorer));
         return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
     }
 }
 
-public class JoinMatcher<T> : IMatcher<T>
+class JoinMatcher<T> : IMatcher<T>
 {
     IMatcher<T> _matcher1; 
     IMatcher<T> _matcher2;
@@ -339,9 +401,9 @@ public class JoinMatcher<T> : IMatcher<T>
     }
 
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable, 
-            Func<Ficha<T>, double> token_scorer) {
+            Func<Token<T>, double> token_scorer) {
         var enume = _matcher1.CanMatch(partida, enumerable, token_scorer).
-            Concat(_matcher2.CanMatch(partida, enumerable, token_scorer));
+            Concat(_matcher2.CanMatch(partida, enumerable, token_scorer)).ToHashSet();
         return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
     }
 }
@@ -356,7 +418,7 @@ public class MultiMatcher<T> : IMatcher<T>
     }
 
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable, 
-            Func<Ficha<T>, double> token_scorer) {
+            Func<Token<T>, double> token_scorer) {
         _matcherEnumerator.MoveNext();
         return _matcherEnumerator.Current.CanMatch(partida, enumerable, token_scorer);
     }
@@ -367,38 +429,44 @@ public class MultiMatcher<T> : IMatcher<T>
 #region  ITurners
 public class ClassicTurner<T> : ITurner<T>
 {
-    public ClassicTurner() { }
-
-    public IEnumerable<Player<T>> Players(Partida<T> partida) {
-        while (true)
-            foreach (var player in partida!.Players())
-                yield return player;
-    }
+    // Turner clasico que reparte los turnos en un orden estricto
+    public IEnumerable<Player<T>> Players(Partida<T> partida) => partida.Teams().OneByOne().Infinty();
 }
 
-public class NPassesReverse<T> : ITurner<T>
+public class NPassesReverseTurner<T> : ITurner<T>
 {
     private int _n;
-
-    public NPassesReverse(int n) {
+    public NPassesReverseTurner(int n) {
         _n = n;
     }
 
+    // Cambia el sentido de reparticion de turnos cuando ocurran n pases
     public IEnumerable<Player<T>> Players(Partida<T> partida) {
         int passes = 0;
-        ReversibleInfiniteEnumerator<Player<T>> enumerator = new ReversibleInfiniteEnumerator<Player<T>>(partida.Players());
+        int index = 0;
+        var players = partida.Teams().OneByOne();
 
-        while (enumerator.MoveNext()) {
-            yield return enumerator.Current;
-            if (partida.Board.Where(x => x.Check).Count() != passes &&
-            partida.Board.Where(x => x.Check).Count() % _n is 0) {
-                enumerator.Direction();
-                passes += partida.Board.Where(x => x.Check).Count();
+        while (true) {
+            foreach (var (i, player) in players.Infinty().Enumerate().Skip(index)) {
+                yield return player;
+                if (partida.Board.Where(x => x.Check).Count() != passes &&
+                partida.Board.Where(x => x.Check).Count() % _n is 0) {
+                    passes += _n;
+                    index = players.Count() - i;
+                    players = players.Reverse();
+                    break;
+                }
             }
         }
-    }
+    }    
+}
 
-    
+public class RandomTurner<T> : ITurner<T>
+{
+    public IEnumerable<Player<T>> Players(Partida<T> partida) {
+        while (true)
+            yield return partida.Players().ElementAt(new Random().Next(partida.Players().Count()));
+    }
 }
 
 #endregion
@@ -411,23 +479,26 @@ public class ClassicDealer<T> : IDealer<T>
         _pieceForPlayers = piecesForPlayers;
     }
 
-    public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Ficha<T>> fichas) {
+    public Dictionary<Player<T>, Hand<T>> Deal(Partida<T> partida, IEnumerable<Token<T>> tokens) {
         Dictionary<Player<T>, Hand<T>> hands = new();
         Random r = new Random();
-        var enumerator = fichas.OrderBy(x => r.NextDouble() - 0.5).GetEnumerator();
+        var enumerator = tokens.OrderBy(x => r.NextDouble() - 0.5).GetEnumerator();
+        var count = 0;
 
-        foreach (var player in partida.Players())
-        {
+        foreach (var player in partida.Players()) {
             var hand = new Hand<T>();
-            var count = 0;
-            while (count++ < _pieceForPlayers && enumerator.MoveNext())
+            while (count < _pieceForPlayers && enumerator.MoveNext()) {
                 hand.Add(enumerator.Current);
+                count++;
+            }
             hands.Add(player, hand);
+            count = 0;
         }
 
         return hands;
     }
 }
+
 
 #endregion
 
@@ -440,15 +511,42 @@ public class ClassicGenerator : IGenerator<int>
         _number = number;
     }
 
-    IEnumerable<Ficha<int>> IGenerator<int>.Generate() {
-        List<Ficha<int>> fichas = new List<Ficha<int>>();
+    IEnumerable<Token<int>> IGenerator<int>.Generate() {
+        List<Token<int>> Tokens = new List<Token<int>>();
 
         for (int i = 0; i < _number; i++)
             for (int j = i; j < _number; j++)
-                fichas.Add(new Ficha<int>(i, j));
+                Tokens.Add(new Token<int>(i, j));
 
-        return fichas;
+        return Tokens;
     }
 }
+
+public class SumPrimeGenerator : IGenerator<int>
+{
+    int _number;
+
+    public SumPrimeGenerator(int number) {
+        _number = number;
+    }
+
+    IEnumerable<Token<int>> IGenerator<int>.Generate() {
+        List<Token<int>> tokens = new List<Token<int>>();
+
+        for (int i = 0; i < _number; i++)
+            for (int j = i; j < _number; j++)
+                tokens.Add(new Token<int>(i, j));
+
+        return tokens.Where(token => IsPrime(token.Head + token.Tail)).ToList();
+    }
+
+    bool IsPrime(int a) {
+        for (int i = 2; i <= Math.Sqrt(a); i++) {
+            if (a % i is 0) return false;
+        }
+        return true;
+    }
+}
+
 
 #endregion

@@ -36,7 +36,7 @@ public class Judge<T> {
 			var move = player.Play(validMoves, partida!.Board, x => partida.InHand(x), x => _scorer.Scorer(partida!, x));
 			if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
 			partida!.AddMove(move!);
-			if (!move!.Check) partida.RemoveFromHand(player, move.Ficha!);
+			if (!move!.Check) partida.RemoveFromHand(player, move.Token!);
 		}
 	}
 
@@ -45,7 +45,7 @@ public class Judge<T> {
 		if (validMoves.IsEmpty()) return true;
 		var move = player.Play(validMoves, partida!.Board, x => partida.InHand(x), x => _scorer.Scorer(partida!, x));
 		if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
-		if (!move!.Check) partida!.RemoveFromHand(player, move.Ficha!);
+		if (!move!.Check) partida!.RemoveFromHand(player, move.Token!);
 		partida!.AddMove(move!);
 		return false;
 	}
@@ -78,7 +78,7 @@ public class Judge<T> {
 
 public class ClassicJudge : Judge<int>
 {
-    public ClassicJudge() : base(new ClassicGenerator(10), new ClassicDealer<int>(10), 
-		new ClassicTurner<int>(), new ClassicMatcher<int>(), 
-		new ClassicScorer(), new ClassicFinisher<int>()) { }
+    public ClassicJudge() : base(new SumPrimeGenerator(15), new ClassicDealer<int>(10), 
+		new RandomTurner<int>(), new RelativesPrimesMatcher().Intersect(new ClassicMatcher<int>()), 
+		new TurnDividesBoardScorer(), new ClassicFinisher<int>()) { }
 }

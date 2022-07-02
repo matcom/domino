@@ -3,26 +3,23 @@ using System.Data;
 
 namespace DominoEngine;
 
-public class Game<T> : IEnumerable<GameState<T>> { //hay que hacerlo
+public class Game<T> : IEnumerable<GameState<T>> {
     private Judge<T> _judge;
     private Partida<T> _partida;
 
-    public Game(Judge<T> judge, List<Team<T>> teams)
-    {
+    public Game(Judge<T> judge, List<Team<T>> teams) {
         _judge = judge;
         _partida = new Partida<T>(teams);
     }
 
-    public IEnumerator<GameState<T>> GetEnumerator()
-    {
+    public IEnumerator<GameState<T>> GetEnumerator() {
         _judge.Start(_partida);
         var first_state = new List<GameState<T>>() { new GameState<T>(_partida.Board, _partida.Hands) };
         return first_state.Concat(_judge.Play(_partida).
         Select((player, i) => new GameState<T>(_partida.Board, _partida.Hands, i, player))).GetEnumerator();
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
+    IEnumerator IEnumerable.GetEnumerator() {
         return GetEnumerator();
     }
 

@@ -13,8 +13,5 @@ public class Tournament<T> : IEnumerable<Game<T>>
         throw new NotImplementedException();
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
