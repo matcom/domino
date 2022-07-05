@@ -76,7 +76,7 @@ public class Judge<T> {
 			yield return move;
 	}
 
-	internal Team<T> Winner(Partida<T> partida) => _scorer.Winner(partida);
+	internal IEnumerable<Team<T>> Winner(Partida<T> partida) => _scorer.Winner(partida);
 }
 
 public class ClassicJudge : Judge<int>

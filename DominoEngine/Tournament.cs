@@ -26,7 +26,7 @@ public abstract class Tournament<T> : IEnumerable<Game<T>>, IWinnerSelector<T>
 
     public abstract IEnumerable<Game<T>> Games(IWinnerSelector<T> winsel);
 
-    public abstract Team<T> Winner();
+    public abstract IEnumerable<Team<T>> Winner();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -46,19 +46,18 @@ public class AllVsAllTournament<T> : Tournament<T>
     public override IEnumerable<Game<T>> Games(IWinnerSelector<T> winsel) {
         _teams!.Make(team => _games.Add(team, 0));
         foreach (var (i,team_1) in _teams!.Enumerate())
-            foreach (var team_2 in _teams!.Skip(i+1)) {
+            foreach (var (j,team_2) in _teams!.Enumerate().Where(pair => pair.Item1 != i)) {
                 var new_winsel = winsel.NewInstance(_judge!, new List<Team<T>>{team_1, team_2});
-                // var game = new Game<T>(_judge!, new List<Team<T>>{team_1, team_2});
                 foreach (var game in new_winsel.Games(new Game<T>())) 
                     yield return game;
-                _games[new_winsel.Winner()] += 3;
+                _games[new_winsel.Winner().First()] += 3;
             }
     }
 
     public override IWinnerSelector<T> NewInstance(Judge<T> judge, IEnumerable<Team<T>> teams)
         => new AllVsAllTournament<T>(judge, teams);
 
-    public override Team<T> Winner() => _games.Keys.MaxBy(team => _games[team])!;
+    public override IEnumerable<Team<T>> Winner() => _games.Keys.OrderByDescending(team => _games[team])!;
 }
 
 public class DirichletTournament<T> : Tournament<T>
@@ -79,10 +78,7 @@ public class DirichletTournament<T> : Tournament<T>
             var new_winsel = winsel.NewInstance(_judge!, _teams!);
             foreach (var game in new_winsel.Games(new Game<T>()))
                 yield return game;
-            // var game = new Game<T>(_judge!, _teams!);
-            // yield return game;
-            // var team = game.Winner();
-            var team = new_winsel.Winner();
+            var team = new_winsel.Winner().First();
             if (!_games.ContainsKey(team)) _games.Add(team, new List<IWinnerSelector<T>>(){new_winsel});
             else _games[team].Add(new_winsel);
         }
@@ -90,7 +86,7 @@ public class DirichletTournament<T> : Tournament<T>
 
     private bool EndCondition() => _games.All(pair => pair.Value.Count() < _numberOfWins);
 
-    public override Team<T> Winner() => _games.Keys.MaxBy(team => _games[team].Count())!;
+    public override IEnumerable<Team<T>> Winner() => _games.Keys.OrderByDescending(team => _games[team].Count())!;
 
     public override IWinnerSelector<T> NewInstance(Judge<T> judge, IEnumerable<Team<T>> teams) 
         => new DirichletTournament<T>(judge, teams, _numberOfWins);
@@ -124,7 +120,7 @@ class TournamentComposition<T> : Tournament<T>
         => _t1.SetJudge(_judge!).SetTeams(_teams!).Games(winsel);
 
     public override IWinnerSelector<T> NewInstance(Judge<T> judge, IEnumerable<Team<T>> teams)
-        => new TournamentComposition<T>(_judge!, _teams!, _t1, _t2);
+        => new TournamentComposition<T>(judge!, teams!, _t1, _t2);
 
-    public override Team<T> Winner() => _t1.Winner();
+    public override IEnumerable<Team<T>> Winner() => _t1.Winner();
 }

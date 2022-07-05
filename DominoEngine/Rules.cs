@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace DominoEngine;
 
 #region IScorers
@@ -10,10 +8,13 @@ public class ClassicScorer : IScorer<int>
 
     public double TokenScorer(Token<int> token) => token.Head + token.Tail;
 
-    public Team<int> Winner(Partida<int> partida) {
-        foreach (var player in partida.Players().Where(x => partida.Hands[x].IsEmpty()))
-            return partida.TeamOf(player);
-        return partida.TeamOf(partida.Hands.MinBy(x => x.Value.Sum(x => TokenScorer(x))).Key);
+    public IEnumerable<Team<int>> Winner(Partida<int> partida) {
+        foreach (var player in partida.Players().Where(x => partida.Hands[x].IsEmpty())) {
+            var winners = new List<Team<int>>(){partida.TeamOf(player)};
+            return winners.Concat(partida.Teams().Complement(winners));
+        }
+        return partida.Teams().OrderByDescending(team => team.Sum(player => partida.Hand(player).
+                Sum(token => TokenScorer(token))));
     }
 }
 
@@ -28,10 +29,12 @@ public class ModFiveScorer : IScorer<int>
 
     public double TokenScorer(Token<int> token) => token.Head + token.Tail;
 
-    // Devuelve al equipo que tiene al jugador con la mayor puntuacion
-    public Team<int> Winner(Partida<int> partida)
-        => partida.TeamOf(partida.Players().MaxBy(player => partida.Board.
-            Where(move => move.PlayerId == partida.PlayerId(player) && !move.Check).Sum(move => Scorer(partida, move)))!);
+    // Devuelve los equipos rankeados por la suma de la puntuacion de sus jugadores
+    public IEnumerable<Team<int>> Winner(Partida<int> partida)
+        => partida.Teams().OrderByDescending(team => team.Sum(player => partida.Board.
+            Where(move => move.PlayerId == partida.PlayerId(player) && !move.Check).Sum(move => Scorer(partida, move))));
+        // => partida.TeamOf(partida.Players().MaxBy(player => partida.Board.
+        //     Where(move => move.PlayerId == partida.PlayerId(player) && !move.Check).Sum(move => Scorer(partida, move)))!);
 }
 
 public class TurnDividesBoardScorer : IScorer<int>
@@ -58,10 +61,13 @@ public class TurnDividesBoardScorer : IScorer<int>
 
     public double TokenScorer(Token<int> token) => token.Head + token.Tail;
 
-    public Team<int> Winner(Partida<int> partida)
-        => partida.TeamOf(partida.Players().MaxBy(player => partida.Board.Enumerate().Where(pair => !pair.Item2.Check 
-            && pair.Item2.PlayerId == partida.PlayerId(player)).
-            Sum(pair => _scores[partida].Where(x => x.turn == pair.Item1).First().score))!);
+    public IEnumerable<Team<int>> Winner(Partida<int> partida)
+        => partida.Teams().OrderByDescending(team => team.Sum(player => partida.Board.Enumerate().
+            Where(pair => !pair.Item2.Check && pair.Item2.PlayerId == partida.PlayerId(player)).
+            Sum(pair => _scores[partida].Where(x => x.turn == pair.Item1).First().score)));
+        // => partida.TeamOf(partida.Players().MaxBy(player => partida.Board.Enumerate().Where(pair => !pair.Item2.Check 
+        //     && pair.Item2.PlayerId == partida.PlayerId(player)).
+        //     Sum(pair => _scores[partida].Where(x => x.turn == pair.Item1).First().score))!);
 }
 
 public static class ScorerExtensors
@@ -88,11 +94,10 @@ class InverseScorer<T> : IScorer<T>
         else return 1 / (_scorer.TokenScorer(token));
     }
 
-    public Team<T> Winner(Partida<T> partida) {
-        foreach (var player in partida.Players().Where(x => partida.Hands[x].IsEmpty()))
-            return partida.TeamOf(player);
-        return partida.TeamOf(partida.Hands.MinBy(x => x.Value.Sum(x => TokenScorer(x))).Key);
-    }
+    public IEnumerable<Team<T>> Winner(Partida<T> partida) => _scorer.Winner(partida).Reverse();
+        // foreach (var player in partida.Players().Where(x => partida.Hands[x].IsEmpty()))
+        //     return partida.TeamOf(player);
+        // return partida.TeamOf(partida.Hands.MinBy(x => x.Value.Sum(x => TokenScorer(x))).Key);
 }
 
 #endregion

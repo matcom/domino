@@ -38,12 +38,12 @@ public interface IScorer<T>
 
     public double TokenScorer(Token<T> token);
 
-    public Team<T> Winner(Partida<T> partida);
+    public IEnumerable<Team<T>> Winner(Partida<T> partida);
 }
 
 public interface IWinnerSelector<T>
 {
-    public Team<T> Winner();
+    public IEnumerable<Team<T>> Winner();
 
     public IWinnerSelector<T> NewInstance(Judge<T> judge, IEnumerable<Team<T>> teams);
 

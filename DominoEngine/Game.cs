@@ -23,7 +23,7 @@ public class Game<T> : IEnumerable<GameState<T>>, IWinnerSelector<T> {
     
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    public Team<T> Winner() => _judge!.Winner(_partida!);
+    public IEnumerable<Team<T>> Winner() => _judge!.Winner(_partida!);
 
     public IWinnerSelector<T> NewInstance(Judge<T> judge, IEnumerable<Team<T>> teams) => new Game<T>(judge, teams);
 

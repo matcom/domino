@@ -29,7 +29,7 @@ public class Program
         // Game<int> game = new Game<int>(new ClassicJudge(), teams);
 
         var judge = new ClassicJudge();
-        var tournament = new AllVsAllTournament<int>().Compose(new DirichletTournament<int>(2));
+        var tournament = new AllVsAllTournament<int>().Compose(new AllVsAllTournament<int>());
 
         foreach (var game in tournament.SetJudge(judge).SetTeams(teams))
             foreach (var GameState in game) {
