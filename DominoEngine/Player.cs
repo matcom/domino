@@ -14,8 +14,7 @@ public abstract class Player<T> {
 		return this;
 	}
 
-	public override string ToString()
-	{
+	public override string ToString() {
 		return name;
 	}
 

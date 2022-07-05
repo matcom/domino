@@ -3,9 +3,9 @@ using DominoEngine;
 public class Partida<T> {
 	private readonly Board<T> _board = new();
 	private readonly Dictionary<Player<T>, Hand<T>> _hands = new();
-	private readonly List<Team<T>> _teams;
+	private readonly IEnumerable<Team<T>> _teams;
 
-	public Partida(List<Team<T>> teams) {
+	public Partida(IEnumerable<Team<T>> teams) {
 		_teams = teams;
 	}
 

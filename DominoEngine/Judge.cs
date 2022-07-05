@@ -27,8 +27,10 @@ public class Judge<T> {
 
 	public IEnumerable<Player<T>> Play(Partida<T> partida) {
 		foreach (var (i, player) in _turner.Players(partida!).Enumerate().SkipWhile(x => Salir(partida, x.Item2))) {
-			yield return player;
-			if (i is 0) continue;
+			if (i is 0) {
+				yield return player;
+				continue;
+			}
 			if (_finisher.GameOver(partida!))
 				yield break;
 
@@ -37,6 +39,7 @@ public class Judge<T> {
 			if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
 			partida!.AddMove(move!);
 			if (!move!.Check) partida.RemoveFromHand(player, move.Token!);
+			yield return player;
 		}
 	}
 
@@ -78,7 +81,7 @@ public class Judge<T> {
 
 public class ClassicJudge : Judge<int>
 {
-    public ClassicJudge() : base(new SumPrimeGenerator(15), new ClassicDealer<int>(10), 
-		new RandomTurner<int>(), new RelativesPrimesMatcher().Intersect(new ClassicMatcher<int>()), 
-		new TurnDividesBoardScorer(), new ClassicFinisher<int>()) { }
+    public ClassicJudge() : base(new ClassicGenerator(10), new ClassicDealer<int>(10), 
+		new ClassicTurner<int>(), new ClassicMatcher<int>(), 
+		new ClassicScorer(), new ClassicFinisher<int>()) { }
 }

@@ -100,9 +100,8 @@ class InverseScorer<T> : IScorer<T>
 #region  IFinishers
 public class ClassicFinisher<T> : IFinisher<T>
 {
-    public bool GameOver(Partida<T> partida) {
-        return AllCheck(partida) || PlayerEnd(partida);
-    }
+    public bool GameOver(Partida<T> partida)
+        => AllCheck(partida) || PlayerEnd(partida);
 
     public bool AllCheck(Partida<T> partida) {
         foreach (var player in partida.Players()) {
@@ -113,11 +112,8 @@ public class ClassicFinisher<T> : IFinisher<T>
         return true;
     }
 
-    public bool PlayerEnd(Partida<T> partida) {
-        foreach (var player in partida.Players().Where(player => partida.Hand(player).IsEmpty()))
-            return true;
-        return false;
-    }
+    public bool PlayerEnd(Partida<T> partida) 
+        => partida.Players().Any(player => partida.Hand(player).IsEmpty());
 }
 
 public class TurnCountFinisher<T> : IFinisher<T>
@@ -403,7 +399,7 @@ class JoinMatcher<T> : IMatcher<T>
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable, 
             Func<Token<T>, double> token_scorer) {
         var enume = _matcher1.CanMatch(partida, enumerable, token_scorer).
-            Concat(_matcher2.CanMatch(partida, enumerable, token_scorer)).ToHashSet();
+            Union(_matcher2.CanMatch(partida, enumerable, token_scorer));
         return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
     }
 }
