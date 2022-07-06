@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace DominoEngine;
 
 public class Judge<T> {
@@ -26,7 +24,7 @@ public class Judge<T> {
 	}
 
 	public IEnumerable<Player<T>> Play(Partida<T> partida) {
-		foreach (var (i, player) in _turner.Players(partida!).Enumerate().SkipWhile(x => Salir(partida, x.Item2))) {
+		foreach (var (i, player) in _turner.Players(partida).Enumerate().SkipWhile(x => Salir(partida, x.Item2))) {
 			if (i is 0) {
 				yield return player;
 				continue;
@@ -35,9 +33,11 @@ public class Judge<T> {
 				yield break;
 
 			var validMoves = GenValidMoves(partida, player).ToHashSet();
-			var move = player.Play(validMoves, partida!.Board, x => partida.InHand(x), x => _scorer.Scorer(partida!, x));
+			var move = player.Play(validMoves, x => partida.PassesInfo(x),partida.Board, x => partida.InHand(x),
+				x => _scorer.Scorer(partida!, x), (x,y) => partida.Partnership(x,y));
 			if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
-			partida!.AddMove(move!);
+			partida.AddMove(move!);
+			partida.AddValidsTurns(_matcher.ValidsTurns(partida, partida.PlayerId(player)));
 			if (!move!.Check) partida.RemoveFromHand(player, move.Token!);
 			yield return player;
 		}
@@ -46,7 +46,8 @@ public class Judge<T> {
 	private bool Salir(Partida<T> partida, Player<T> player) {
 		var validMoves = GenSalidas(partida, player).ToHashSet();
 		if (validMoves.IsEmpty()) return true;
-		var move = player.Play(validMoves, partida!.Board, x => partida.InHand(x), x => _scorer.Scorer(partida!, x));
+		var move = player.Play(validMoves, x => partida.PassesInfo(x),partida!.Board, x => partida.InHand(x), 
+			x => _scorer.Scorer(partida, x), (x,y) => partida.Partnership(x,y));
 		if (!validMoves.Contains(move)) move = validMoves.FirstOrDefault();
 		if (!move!.Check) partida!.RemoveFromHand(player, move.Token!);
 		partida!.AddMove(move!);
@@ -54,7 +55,7 @@ public class Judge<T> {
 	}
 
 	private IEnumerable<Move<T>> GenMoves(Partida<T> partida, Player<T> player) {
-		var playerId = partida!.PlayerId(player);
+		var playerId = partida.PlayerId(player);
 		yield return new Move<T>(playerId);
 		foreach (var (head, tail) in partida.Hand(player)) {
 			yield return new Move<T>(playerId, false, -1, head, tail);

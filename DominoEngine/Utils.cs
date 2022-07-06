@@ -17,6 +17,14 @@ public static class Utils
             function(item);
     }
 
+    public static IEnumerable<TSource> Average<TSource>(this IEnumerable<TSource> source, 
+        IEnumerable<TSource> other, double value) {
+            Dictionary<TSource, double> record = new();
+            source.Enumerate().Make(item => record.Add(item.Item2, item.Item1));
+            other.Select((x,i) => (i*value, x)).Make(item => record[item.x] += item.Item1);
+            return record.Keys.OrderBy(key => record[key]);
+        }
+
     public static IEnumerable<TSource> Infinty<TSource>(this IEnumerable<TSource> source) {
         var enumerator = new InfiniteEnumerator<TSource>(source);
         while (enumerator.MoveNext())

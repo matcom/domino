@@ -17,6 +17,8 @@ public interface IMatcher<T>
     // Interfaz que se encarga de decidir si dos tokens matchean o no
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
             Func<Token<T>, double> token_scorer);
+
+    public IEnumerable<int> ValidsTurns(Partida<T> partida, int player);
 }
 
 public interface ITurner<T>

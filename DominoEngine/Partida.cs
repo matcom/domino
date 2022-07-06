@@ -4,6 +4,7 @@ public class Partida<T> {
 	private readonly Board<T> _board = new();
 	private readonly Dictionary<Player<T>, Hand<T>> _hands = new();
 	private readonly IEnumerable<Team<T>> _teams;
+	private readonly Dictionary<int, IEnumerable<int>> _validsTurns = new();
 
 	public Partida(IEnumerable<Team<T>> teams) {
 		_teams = teams;
@@ -17,6 +18,10 @@ public class Partida<T> {
 	internal bool RemoveFromHand(Player<T> player, Token<T> token) =>
 		Hands.ContainsKey(player) && Hands[player].Remove(token);
 
+	internal void AddValidsTurns(IEnumerable<int> validsTurns) => _validsTurns.Add(_validsTurns.Count, validsTurns);
+
+	internal IEnumerable<int> PassesInfo(int turn) => _validsTurns[turn];
+
 	internal IEnumerable<Token<T>> Hand(Player<T> player) => Hands[player].Clone();
 
 	internal int PlayerId(Player<T> player) => player.PlayerId;
@@ -26,11 +31,13 @@ public class Partida<T> {
 		return _hands[Players().Where(x => x.PlayerId == hash).FirstOrDefault()!].Count;
 	} 
 
+	internal bool Partnership(int pId1, int pId2) => TeamOf(pId1).Equals(TeamOf(pId2));
+
 	internal Team<T> TeamOf(Player<T> player) => _teams.FirstOrDefault(x => x!.Contains(player), default)!;
 
 	internal Team<T> TeamOf(int playerId) => TeamOf(Players().FirstOrDefault(x => x.PlayerId == playerId)!);
 
-	public List<Move<T>> Board => _board.ToList();
+	internal List<Move<T>> Board => _board.ToList();
 
 	internal void SetHand(Player<T> player, Hand<T> hand) => Hands.Add(player, hand.Clone());
 
