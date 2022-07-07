@@ -8,12 +8,13 @@ public class Program
         // List<string> names = new List<string>() {"Alex", "Omar", "Jky", "Anthuan"};
         List<Team<int>> teams = new() {
             new Team<int>(new List<Player<int>>(){
-                new Botagorda<int>("Alex"),
-                new Botagorda<int>("Jky")
+                new SmartPlayer<int>("Alex"),
+                new SupportPlayer<int>("Jky"),
+                new Botagorda<int>("Daniela")
             }),
             new Team<int>(new List<Player<int>>(){
-                new Botagorda<int>("Omar"),
-                new Botagorda<int>("Anthuan")
+                new DestroyerPlayer<int>("Omar"),
+                new SelfishPlayer<int>("Anthuan")
             }),
             new Team<int>(new List<Player<int>>(){
                 new Botagorda<int>("Anabel"),
@@ -33,6 +34,7 @@ public class Program
 
         foreach (var game in tournament.SetJudge(judge).SetTeams(teams))
             foreach (var GameState in game) {
+                // Console.Clear();
                 System.Console.WriteLine(GameState);
                 Console.ReadLine();
             }

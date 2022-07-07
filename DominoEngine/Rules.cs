@@ -190,18 +190,17 @@ public class ClassicMatcher<T> : IMatcher<T>
 
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
             Func<Token<T>, double> token_scorer) {
-        ValidsTurn(partida);
-        var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x));
-        return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
-    }
+                ValidsTurn(partida);
+                var enume = enumerable.Where(x => !x.Check && CanMatch(partida, x));
+                return (enume.IsEmpty()) ? enumerable.Where(x => x.Check) : enume;
+            }
 
     public IEnumerable<int> ValidsTurns(Partida<T> partida, int player) => validsTurns[partida];
 
     private bool CanMatch(Partida<T> partida, Move<T> move) {
         // Permite salir con cualquier token
         if (partida.Board.IsEmpty()) return true;
-        foreach (var validturn in validsTurns[partida]!.Where(x => x == move.Turn))
-        {
+        foreach (var validturn in validsTurns[partida]!.Where(x => x == move.Turn)) {
             if (validturn == -1) return partida.Board[0].Head!.Equals(move.Head);
             return partida.Board[validturn].Tail!.Equals(move.Head);
         }
