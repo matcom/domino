@@ -14,7 +14,7 @@ public interface IDealer<T> {
 public interface IMatcher<T> {
     // Filtro de jugadas validas
     public IEnumerable<Move<T>> CanMatch(Partida<T> partida, IEnumerable<Move<T>> enumerable,
-            Func<Token<T>, double> token_scorer);
+            Func<Token<T>, double> tokenScorer);
 
     // Devuelve los turnos validos dados cierta partida
     public IEnumerable<int> ValidsTurns(Partida<T> partida, int player);

@@ -2,7 +2,6 @@ using DominoEngine;
 
 public class Partida<T> {
 	private readonly Board<T> _board = new();
-	private readonly Dictionary<Player<T>, Hand<T>> _hands = new();
 	private readonly IEnumerable<Team<T>> _teams;
 	private readonly Dictionary<int, IEnumerable<int>> _validsTurns = new();
 
@@ -31,7 +30,7 @@ public class Partida<T> {
 	// Para un player, devuelve cuantas fichas tiene en las manoaq
 	internal int InHand(int hash) {
 		if (Players().Where(x => x.PlayerId == hash).IsEmpty()) return -1;
-		return _hands[Players().Where(x => x.PlayerId == hash).FirstOrDefault()!].Count;
+		return Hands[Players().FirstOrDefault(x => x.PlayerId == hash)!].Count;
 	} 
 
 	// Devuelve true si dos players estan en el mismo equipo
@@ -49,10 +48,10 @@ public class Partida<T> {
 	internal void SetHand(Player<T> player, Hand<T> hand) => Hands.Add(player, hand.Clone());
 
 	// Devuelve todos los players involucrados en la partida
-	internal IEnumerable<Player<T>> Players() => _teams.SelectMany(player => player);
+	internal IEnumerable<Player<T>> Players() => _teams.SelectMany(team => team);
 
 	// Devuelve los teams involucrados en la partida
 	internal IEnumerable<Team<T>> Teams() => _teams;
 
-    internal Dictionary<Player<T>, Hand<T>> Hands => _hands;
+    internal Dictionary<Player<T>, Hand<T>> Hands { get; } = new();
 }

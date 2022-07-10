@@ -4,7 +4,7 @@ namespace DominoEngine;
 
 public class Team<T> : IReadOnlyList<Player<T>>
 {
-    List<Player<T>> _team;
+    private readonly List<Player<T>> _team;
 
     public Team(List<Player<T>> team) {
         _team = team;
@@ -16,8 +16,5 @@ public class Team<T> : IReadOnlyList<Player<T>>
 
     public IEnumerator<Player<T>> GetEnumerator() => _team.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

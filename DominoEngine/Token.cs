@@ -1,6 +1,6 @@
 ﻿namespace DominoEngine;
 
-public struct Token<T> {
+public readonly struct Token<T> {
 	public readonly T Head;
 	public readonly T Tail;
 
@@ -24,8 +24,5 @@ public struct Token<T> {
 		tail = Tail;
 	}
 
-    public override string ToString()
-    {
-        return $"({Head}|{Tail})";
-    }
+    public override string ToString() => $"({Head}|{Tail})";
 }

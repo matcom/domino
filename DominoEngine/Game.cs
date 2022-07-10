@@ -4,10 +4,10 @@ using System.Data;
 namespace DominoEngine;
 
 public class Game<T> : IEnumerable<GameState<T>>, IWinnerSelector<T> {
-    private Judge<T>? _judge; // Juez que guiara este Game por completo
-    private Partida<T>? _partida; 
+    private readonly Judge<T>? _judge; // Juez que guiara este Game por completo
+    private readonly Partida<T>? _partida;
 
-    public Game(Judge<T> judge, IEnumerable<Team<T>> teams) {
+    private Game(Judge<T> judge, IEnumerable<Team<T>> teams) {
         _judge = judge;
         _partida = new Partida<T>(teams);
     }
@@ -17,9 +17,9 @@ public class Game<T> : IEnumerable<GameState<T>>, IWinnerSelector<T> {
     public IEnumerator<GameState<T>> GetEnumerator() {
         _judge!.Start(_partida!); // Se preparan las condiciones para comenzar el Game
         // Crear el primer GameState, antes de la primera jugada
-        var first_state = new List<GameState<T>>() {new GameState<T>(_partida!.Board, _partida.Hands)};
+        var firstState = new List<GameState<T>>() {new GameState<T>(_partida!.Board, _partida.Hands)};
         // Devolver los GameState uno a uno mientras se efectuan las jugadas
-        return first_state.Concat(_judge.Play(_partida).
+        return firstState.Concat(_judge.Play(_partida).
         Select((player, i) => new GameState<T>(_partida.Board, _partida.Hands, i, player))).GetEnumerator();
     }
     
@@ -37,7 +37,7 @@ public record GameState<T>(List<Move<T>> Board, Dictionary<Player<T>, Hand<T>> H
     int Turn = -1, Player<T> PlayerToPlay = default!) {
     public override string ToString()
     {
-        string result = "";
+        var result = "";
         if (Turn is not -1) {
             result += $"Turn: {Turn}\n";
             result += $"Player to Play: {PlayerToPlay.ToString()}\n";
@@ -45,9 +45,7 @@ public record GameState<T>(List<Move<T>> Board, Dictionary<Player<T>, Hand<T>> H
         result += $"Hands:\n";
         foreach (var (player, hand) in Hands)
             result += $"Player {player.ToString()}: {hand.ToString()}\n";
-        int count = 0;
-        foreach (var move in Board)
-            result += $"Turn {count++}: Player {move.PlayerId}: {move.ToString()}\n";
-        return result;
+        var count = 0;
+        return Board.Aggregate(result, (current, move) => current + $"Turn {count++}: Player {move.PlayerId}: {move.ToString()}\n");
     }
 }
