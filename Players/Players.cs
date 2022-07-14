@@ -53,11 +53,13 @@ public class DestroyerPlayer<T> : Player<T>
 
     private static int DestroyRival(T head, List<Move<T>> board, IEnumerable<int> rivalId, Func<int, IEnumerable<int>> passesInfo) 
         => rivalId.Count(player => board.Where(move => move.Check && move.PlayerId == player).Enumerate().
-            Select(pair => passesInfo(pair.Item1)).Any(turns => turns.Any(turn => board[turn].Tail!.Equals(head))));
+            Select(pair => passesInfo(pair.Item1)).
+                Any(turns => turns.Any(turn => turn is -1 ? Equals(board[0].Head,head) : Equals(board[turn].Tail,head))));
 
     private static int RivalPasses(T tail, List<Move<T>> board, IEnumerable<int> rivalId, Func<int, IEnumerable<int>> passesInfo) 
         => rivalId.Count(player => board.Where(move => move.Check && move.PlayerId == player).Enumerate().
-            Select(pair => passesInfo(pair.Item1)).Any(turns => turns.Any(turn => board[turn].Tail!.Equals(tail))));
+            Select(pair => passesInfo(pair.Item1)).
+                Any(turns => turns.Any(turn => turn is -1 ? Equals(board[0].Head,tail) : Equals(board[turn].Tail,tail))));
 }
 
 public class SupportPlayer<T> : Player<T>
@@ -87,7 +89,8 @@ public class SupportPlayer<T> : Player<T>
     // Calcula cantidad de compañeros pasados por un valor especifico
     private int HelpTeam(T head, List<Move<T>> board, IEnumerable<int> teamId, Func<int, IEnumerable<int>> passesInfo) 
         => teamId.Count(player => board.Where(move => move.Check && move.PlayerId == player).Enumerate().
-            Select(pair => passesInfo(pair.Item1)).Any(turns => turns.Any(turn => board[turn].Tail!.Equals(head))));
+            Select(pair => passesInfo(pair.Item1)).
+                Any(turns => turns.Any(turn => turn is -1 ? Equals(board[0].Head,head) : Equals(board[turn].Tail,head))));
 
     // Evitar jugar por fichas puestas por compañeros de equipo
     private int AvoidFriendsTokens(Move<T> move, List<Move<T>> board, Func<int, int, bool> partner) {
@@ -98,7 +101,8 @@ public class SupportPlayer<T> : Player<T>
     // Contar la cantidad de compañeros que podrian pasarse con un valor especifico
     private int AvoidFriendPasses(T tail, List<Move<T>> board, IEnumerable<int> teamId, Func<int, IEnumerable<int>> passesInfo) 
         => teamId.Count(player => board.Where(move => move.Check && move.PlayerId == player).Enumerate().
-            Select(pair => passesInfo(pair.Item1)).Any(turns => turns.Any(turn => board[turn].Tail!.Equals(tail))));
+            Select(pair => passesInfo(pair.Item1)).
+                Any(turns => turns.Any(turn => turn is -1 ? Equals(board[0].Head,tail) : Equals(board[turn].Tail,tail))));
 }
 
 public class SelfishPlayer<T> : Player<T> where T : notnull
@@ -137,6 +141,7 @@ public class SmartPlayer<T> : Player<T> where T : notnull
     private readonly SelfishPlayer<T> _selfish;
     private readonly SupportPlayer<T> _helper;
     private readonly DestroyerPlayer<T> _destroyer;
+    
     public SmartPlayer(string name) : base(name) { 
         _selfish = new SelfishPlayer<T>(PlayerId);
         _helper = new SupportPlayer<T>(PlayerId);

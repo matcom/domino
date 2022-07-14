@@ -17,10 +17,10 @@ public class Game<T> : IEnumerable<GameState<T>>, IWinnerSelector<T> {
     public IEnumerator<GameState<T>> GetEnumerator() {
         _judge!.Start(_partida!); // Se preparan las condiciones para comenzar el Game
         // Crear el primer GameState, antes de la primera jugada
-        var firstState = new List<GameState<T>>() {new GameState<T>(_partida!.Board, _partida.Hands)};
+        var firstState = new List<GameState<T>>() {new GameState<T>(_partida!.Board.ToList(), _partida.Hands)};
         // Devolver los GameState uno a uno mientras se efectuan las jugadas
         return firstState.Concat(_judge.Play(_partida).
-        Select((player, i) => new GameState<T>(_partida.Board, _partida.Hands, i, player))).GetEnumerator();
+        Select((player, i) => new GameState<T>(_partida.Board.ToList(), _partida.Hands, i, player))).GetEnumerator();
     }
     
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

@@ -17,7 +17,7 @@ public readonly struct Token<T> {
 
 	public bool Equals(Token<T> token) =>
 		(Equals(Head, token.Head) && Equals(Tail, token.Tail)) ||
-		(Equals(Head, token.Tail) && Equals(Tail, token.Head));
+		(Equals(Head, token.Tail) && Equals(Tail, token.Head)); 
 
 	public void Deconstruct(out T head, out T tail) {
 		head = Head;

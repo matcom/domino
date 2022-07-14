@@ -1,7 +1,9 @@
 ﻿using DominoEngine;
 using Players;
 
-public class Program
+namespace Tester;
+
+public static class Program
 {
     public static void Main()
     {
@@ -30,14 +32,14 @@ public class Program
         // Game<int> game = new Game<int>(new ClassicJudge(), teams);
 
         var judge = new ClassicJudge();
-        var tournament = new AllVsAllTournament<int>().Compose(new AllVsAllTournament<int>());
+        var tournament = new EliminatoryTournament<int>(judge, teams);
 
         foreach (var game in tournament.SetJudge(judge).SetTeams(teams))
-            foreach (var GameState in game) {
-                // Console.Clear();
-                System.Console.WriteLine(GameState);
-                Console.ReadLine();
-            }
+        foreach (var gameState in game) {
+            // Console.Clear();
+            System.Console.WriteLine(gameState);
+            Console.ReadLine();
+        }
 
         Console.ReadLine();
     }

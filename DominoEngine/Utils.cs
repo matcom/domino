@@ -4,31 +4,28 @@ namespace DominoEngine;
 
 public static class Utils
 {
-    // Devuelve un IEumerable de tuplas de elementos con sus respectivos indices
     public static IEnumerable<(int, TSource)> Enumerate<TSource>(this IEnumerable<TSource> source) 
-        => source.Select((t, i) => (index: i, item: t));
+        => source.Select((t, i) => (index: i, item: t)); // Devuelve una tupla con el indice y el elemento
         
 
-    // Dados dos IEnumerables, devuleve el complemento de uno con respecto a otro
     public static IEnumerable<TSource> Complement<TSource>(this IEnumerable<TSource> source, IEnumerable<TSource> another)
-        => source.Where(x => !another.Contains(x));
+        => source.Where(x => !another.Contains(x)); // Complemento de uno con respecto a otro
 
     // Devuelve true si un IEnumerable no tiene elementos
     public static bool IsEmpty<TSource>(this IEnumerable<TSource> source) => (source.Take(1).Count() is 0);
 
-    // Para cada elemento de un IEnumerable, realiza una funcion void
     public static void Make<TSource>(this IEnumerable<TSource> source, Action<TSource> function) {
         foreach (var item in source)
-            function(item);
+            function(item); // Ejecuta la funcion sobre cada elemento
     }
 
     // Dados dos IEnumerables con los mismos elementos, construye un tercero reorganizandolos, 
     // de forma tal que se prioricen los elementos que entre ambos IEnumerables tengan menor indice
     public static IEnumerable<TSource> Average<TSource>(this IEnumerable<TSource> source, 
         IEnumerable<TSource> other, double value) where TSource : notnull  {
-            Dictionary<TSource, double> record = new();
-            source.Enumerate().Make(item => record.Add(item.Item2, item.Item1));
-            other.Select((x,i) => (i * value, x)).Make(item => record[item.x] += item.Item1);
+            Dictionary<TSource, double> record = new(); 
+            source.Enumerate().Make(item => record.Add(item.Item2, item.Item1)); 
+            other.Select((x,i) => (i * value, x)).Make(item => record[item.x] += item.Item1); 
             return record.Keys.OrderBy(key => record[key]);
         }
 
