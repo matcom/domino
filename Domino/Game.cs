@@ -1,10 +1,10 @@
 using Domino.Players;
 using Domino.Tokens;
-using Domino.Utils;
+using Domino.Referee;
 
 namespace Domino.Game;
 
-public class DominoGame<TToken> where TToken : DominoToken {
+public class DominoGame {
     IList<DominoPlayer> players;
     IEnumerable<DominoToken>[] playerTokens;
     List<DominoMove> moves;
@@ -13,10 +13,19 @@ public class DominoGame<TToken> where TToken : DominoToken {
     int currentPlayer;
     int passCounter = 0;
     bool ended = false;
+    IWinner winnerCheck;
+    IWinCondition winCondition;
 
     public DominoGame(
-        int tokenValues, int tokenAmount, ITokenGenerator<TToken> generator, IList<DominoPlayer> players
+        int tokenValues, 
+        int tokenAmount, 
+        DominoToken token, 
+        IList<DominoPlayer> players, 
+        IWinner winnerCheck, 
+        IWinCondition winCondition
     ) {
+        this.winCondition = winCondition;
+        this.winnerCheck = winnerCheck;
         this.currentPlayer = 0;
         this.freeValues = new int[2];
         this.players = players;
@@ -24,7 +33,7 @@ public class DominoGame<TToken> where TToken : DominoToken {
         this.playerTokens = new IEnumerable<DominoToken>[this.players.Count];
         this.moves = new List<DominoMove>();
 
-        IList<TToken> tokens = generator.GenerateTokens(tokenValues);
+        IList<DominoToken> tokens = token.GenerateTokens(tokenValues);
 
         for(int i = 0; i < this.players.Count; i++) {
             List<DominoToken> playerTokenList = new List<DominoToken>();
@@ -52,12 +61,8 @@ public class DominoGame<TToken> where TToken : DominoToken {
         this.moves.Add(new DominoMove(this.players[this.currentPlayer], this.startToken));
         this.freeValues[0] = this.startToken.Left;
         this.freeValues[1] = this.startToken.Right;
+
         NextPlayer();
-    }
-    bool IsValid(DominoMove move) {
-        if (this.freeValues.Contains(move.Token.Left) || this.freeValues.Contains(move.Token.Right))
-            return true;
-        return false;
     }
 
     bool CanPlay(int playerIndex) {
@@ -70,24 +75,7 @@ public class DominoGame<TToken> where TToken : DominoToken {
         return false;
     }
 
-    protected virtual bool WinCondition() {
-        if (passCounter == this.players.Count)
-            return true;
-        return false;
-    }
-
-    public virtual DominoPlayer GetWinner() {
-        int[] playerScores = new int[this.players.Count];
-
-        for(int i = 0; i < this.players.Count; i++)
-        {
-            playerScores[i] += this.playerTokens[i].Sum(token => token.Value());
-        }
-
-        return this.players[Array.IndexOf(playerScores, playerScores.Min())];
-    }
-
-    protected virtual void NextPlayer() {
+    void NextPlayer() {
         if (this.currentPlayer == this.players.Count - 1)
             this.currentPlayer = 0;
         else
@@ -115,20 +103,22 @@ public class DominoGame<TToken> where TToken : DominoToken {
 
     public void Result() {
         if (!ended) {
-            while (!WinCondition()) {
+            while (!this.winCondition.Achieved(
+                this.players, this.playerTokens, this.passCounter, this.freeValues, this.moves
+            )) {
                 if (CanPlay(this.currentPlayer)) {
                     Console.Clear();
 
+                    System.Console.WriteLine("Moves:");
                     foreach(DominoMove m in this.moves)
                         System.Console.WriteLine(m);
 
                     this.passCounter = 0;
 
-                    DominoMove move = players[this.currentPlayer].Play(
+                    AddMove(
+                        players[this.currentPlayer].Play(
                         playerTokens[this.currentPlayer], this.moves, this.freeValues
-                    );
-                    
-                    AddMove(move);
+                    ));                    
                     
                     NextPlayer();
                 }
@@ -139,7 +129,12 @@ public class DominoGame<TToken> where TToken : DominoToken {
             }
             ended = true;
         }
-        System.Console.WriteLine($"Winner: {GetWinner()}");
+
+        System.Console.Clear();
+        System.Console.WriteLine(this.moves.Count);
+        System.Console.WriteLine("Moves:");
+        foreach(DominoMove move in this.moves) System.Console.WriteLine(move);
+        System.Console.WriteLine($"Winner: {winnerCheck.GetWinner(this.players, this.playerTokens)}");
     }
 }
 
