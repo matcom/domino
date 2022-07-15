@@ -58,6 +58,9 @@ public class AllVsAllTournament<T> : Tournament<T>
         => new AllVsAllTournament<T>(judge, teams);
 
     public override IEnumerable<Team<T>> Winner() => _games.Keys.OrderByDescending(team => _games[team])!;
+
+    public override string ToString()
+        => "Para cada combinacion de dos equipos, se crean dos enfrentamientos";
 }
 
 public class DirichletTournament<T> : Tournament<T>
@@ -69,7 +72,7 @@ public class DirichletTournament<T> : Tournament<T>
         _numberOfWins = number; 
     }
 
-    public DirichletTournament(Judge<T> judge, IEnumerable<Team<T>> teams, int number) : base(judge, teams) {
+    private DirichletTournament(Judge<T> judge, IEnumerable<Team<T>> teams, int number) : base(judge, teams) {
         _numberOfWins = number;
     }
 
@@ -90,6 +93,9 @@ public class DirichletTournament<T> : Tournament<T>
 
     public override IWinnerSelector<T> NewInstance(Judge<T> judge, IEnumerable<Team<T>> teams) 
         => new DirichletTournament<T>(judge, teams, _numberOfWins); 
+
+    public override string ToString()
+        => "Mientras un equipo no gane n veces, se seguira jugando";
 }
 
 public class EliminatoryTournament<T> : Tournament<T>
@@ -104,7 +110,7 @@ public class EliminatoryTournament<T> : Tournament<T>
     public override IEnumerable<Game<T>> Games(IWinnerSelector<T> winsel) {
         if (Teams!.Count() is 2) {
             var newWinsel = winsel.NewInstance(Judge!, Teams!);
-            foreach (var game in newWinsel.Games(winsel))
+            foreach (var game in newWinsel.Games(new Game<T>()))
                 yield return game;
             yield break; // Si solo hay dos equipos, no hay mas partidas por jugar
         }
@@ -132,6 +138,41 @@ public class EliminatoryTournament<T> : Tournament<T>
         => new EliminatoryTournament<T>(judge, teams);
 
     public override IEnumerable<Team<T>> Winner() => _winners!;
+
+    public override string ToString()
+        => "Enfrenta a la mitad de los equipos en un juego, a la otra mitad en otro, a los ganadores los enfrenta";
+}
+
+public class NGamesTournament<T> : Tournament<T>
+{
+    private readonly Dictionary<Team<T>, int> _winners = new();
+    private readonly int _numberOfGames;
+
+    public NGamesTournament(int number) {
+        _numberOfGames = number;
+    }
+
+    public NGamesTournament(Judge<T> judge, IEnumerable<Team<T>> teams) : base(judge, teams) { }
+
+    public override IEnumerable<Game<T>> Games(IWinnerSelector<T> winsel) {
+        for (int i = 0; i < _numberOfGames; i++) {
+            var newWinsel = winsel.NewInstance(Judge!, Teams!);
+            foreach (var game in newWinsel.Games(new Game<T>()))
+                yield return game;    
+            var winner = newWinsel.Winner().First();
+            if (!_winners.ContainsKey(winner)) _winners.Add(winner, 0);
+            _winners[winner]++;
+        }
+    }
+
+    public override IWinnerSelector<T> NewInstance(Judge<T> judge, IEnumerable<Team<T>> teams)
+        => new NGamesTournament<T>(judge, teams);
+
+    public override IEnumerable<Team<T>> Winner()
+        => _winners.OrderByDescending(pair => pair.Value).Select(pair => pair.Key);
+
+    public override string ToString()
+        => "Se crearan n enfrentamientos con todos los equipos";
 }
 
 public static class TournamentExtensors
@@ -142,27 +183,32 @@ public static class TournamentExtensors
 
 internal class TournamentComposition<T> : Tournament<T>
 {
-    private readonly Tournament<T> _t1;
-    private readonly Tournament<T> _t2;
+    private readonly Tournament<T> _tournament1;
+    private readonly Tournament<T> _tournament2;
 
     public TournamentComposition(Tournament<T> t1, Tournament<T> t2) {
-        _t1 = t1;
-        _t2 = t2;
+        _tournament1 = t1;
+        _tournament2 = t2;
     }
 
     private TournamentComposition(Judge<T> judge, IEnumerable<Team<T>> teams, 
         Tournament<T> t1, Tournament<T> t2) : base(judge, teams) {
-            _t1 = t1;
-            _t2 = t2;
+            _tournament1 = t1;
+            _tournament2 = t2;
     }
 
-    public override IEnumerator<Game<T>> GetEnumerator() => Games(_t2).GetEnumerator();
+    public override IEnumerator<Game<T>> GetEnumerator() => Games(_tournament2).GetEnumerator();
 
     public override IEnumerable<Game<T>> Games(IWinnerSelector<T> winsel) 
-        => _t1.SetJudge(Judge!).SetTeams(Teams!).Games(winsel);
+        => _tournament1.SetJudge(Judge!).SetTeams(Teams!).Games(winsel);
 
     public override IWinnerSelector<T> NewInstance(Judge<T> judge, IEnumerable<Team<T>> teams)
-        => new TournamentComposition<T>(judge!, teams!, _t1, _t2);
+        => new TournamentComposition<T>(judge!, teams!, _tournament1, _tournament2);
 
-    public override IEnumerable<Team<T>> Winner() => _t1.Winner();
+    public override IEnumerable<Team<T>> Winner() => _tournament1.Winner();
+
+    public override string ToString()
+        => $@"Composicion:
+    {_tournament1.ToString()!.Replace("\n","\n\t")}
+    {_tournament2.ToString()!.Replace("\n","\n\t")}";
 }

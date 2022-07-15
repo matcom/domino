@@ -2,7 +2,7 @@ using DominoEngine;
 
 namespace Rules;
 
-public class ClassicMatcher<T> : IMatcher<T>
+public class SideMatcher<T> : IMatcher<T>
 {
     private readonly Dictionary<Partida<T>, List<int>> _validsTurns = new();
 
@@ -18,9 +18,6 @@ public class ClassicMatcher<T> : IMatcher<T>
     private bool CanMatch(Partida<T> partida, Move<T> move) {
         // Permite salir con cualquier token
         return partida.Board.IsEmpty() || _validsTurns[partida]!.Contains(move.Turn);
-        // .
-        //     Select(validturn => validturn == -1 ? partida.Board[0].Head!.Equals(move.Head) 
-        //         : partida.Board[validturn].Tail!.Equals(move.Head)).FirstOrDefault();
     }
 
     private void ValidsTurn(Partida<T> partida) {
@@ -34,6 +31,9 @@ public class ClassicMatcher<T> : IMatcher<T>
             _validsTurns[partida].Add(i);
         }
     }
+
+    public override string ToString()
+        => "Permite jugar solo por dos extremos";
 }
 
 public class EqualMatcher<T> : IMatcher<T>
@@ -49,6 +49,9 @@ public class EqualMatcher<T> : IMatcher<T>
 
     public IEnumerable<int> ValidsTurns(Partida<T> partida, int player)
         => partida.Board.Where(move => !move.Check).Select(move => move.Turn);
+
+    public override string ToString()
+        => "Permite jugar solo si la cabeza de la ficha a poner es igual a la cola de la ficha puesta";
 }
 
 public class LonganaMatcher<T> : IMatcher<T>
@@ -73,9 +76,6 @@ public class LonganaMatcher<T> : IMatcher<T>
 
         // Valida movimientos si estan disponibles y cumplen la condicion de longana
         return _validsTurns[partida][move.PlayerId].Select(x => x.turn).Contains(move.Turn);
-        // .Where(x => x == move.Turn).
-        //     Select(validturn => validturn is -1 ? partida.Board[0].Head!.Equals(move.Head) 
-        //         : partida.Board[validturn].Tail!.Equals(move.Head)).FirstOrDefault();
     }
 
     private void ValidsTurn(Partida<T> partida, int player) {
@@ -124,6 +124,9 @@ public class LonganaMatcher<T> : IMatcher<T>
             }
         }
     }
+
+    public override string ToString()
+        => "Permite jugar solo por las posiciones validas de la longana";
 }
 
 public class RelativesPrimesMatcher : IMatcher<int>
@@ -145,6 +148,9 @@ public class RelativesPrimesMatcher : IMatcher<int>
 
     private static int Mcd(int a, int b)
         => a is 0 || b is 0 ? 0 : (a % b is 0) ? b : Mcd(b, a % b);
+
+    public override string ToString()
+        => "Permite jugar solo si las sumas de las fichas puesta y por poner son primos relativos";
 }
 
 public class EvenOddMatcher : IMatcher<int>
@@ -161,6 +167,9 @@ public class EvenOddMatcher : IMatcher<int>
     // Devuelve true si el token y el turno tienen la misma paridad
     private static bool CanMatch(Partida<int> partida, Move<int> move, Func<Token<int>, double> tokenScorer)
         => (int)tokenScorer(move.Token) % 2  == partida.Board.Count % 2;
+
+    public override string ToString()
+        => "Permite jugar solo si la paridad del turno y la ficha son la misma";
 }
 
 public class TeamTokenInvalidMatcher<T> : IMatcher<T>
@@ -180,8 +189,11 @@ public class TeamTokenInvalidMatcher<T> : IMatcher<T>
         if (partida.Board.Where(move => partida.TeamOf(move.PlayerId).Equals(team)).IsEmpty() || move.Turn < 0)
             return true;
         else 
-            return team.Equals(partida.TeamOf(partida.Board[move.Turn].PlayerId));
+            return Equals(team, partida.TeamOf(partida.Board[move.Turn].PlayerId));
     }
+
+    public override string ToString()
+        => "Permite jugar solo si la ficha no la jugo un compañero de equipo";
 }
 
 public static class MatcherExtensors
@@ -212,6 +224,10 @@ internal class InverseMatcher<T> : IMatcher<T>
 
     public IEnumerable<int> ValidsTurns(Partida<T> partida, int player)
         => partida.Board.Where(move => !move.Check).Select(move => move.Turn).Complement(_matcher.ValidsTurns(partida, player));
+
+    public override string ToString()
+        => $@"Inverse:
+    {_matcher.ToString()!.Replace("\n","\n\t")}";
 }
 
 internal class IntersectMatcher<T> : IMatcher<T>
@@ -232,6 +248,11 @@ internal class IntersectMatcher<T> : IMatcher<T>
 
     public IEnumerable<int> ValidsTurns(Partida<T> partida, int player)
         => _matcher1.ValidsTurns(partida, player).Intersect(_matcher2.ValidsTurns(partida, player));
+
+    public override string ToString()
+        => $@"Intersect:
+    {_matcher1.ToString()!.Replace("\n","\n\t")}
+	{_matcher2.ToString()!.Replace("\n","\n\t")}";
 }
 
 internal class JoinMatcher<T> : IMatcher<T>
@@ -253,4 +274,9 @@ internal class JoinMatcher<T> : IMatcher<T>
 
     public IEnumerable<int> ValidsTurns(Partida<T> partida, int player)
         => _matcher1.ValidsTurns(partida, player).Union(_matcher2.ValidsTurns(partida, player));
+
+    public override string ToString()
+        => $@"Union:
+    {_matcher1.ToString()!.Replace("\n","\n\t")}
+	{_matcher2.ToString()!.Replace("\n","\n\t")}";
 }

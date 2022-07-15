@@ -17,6 +17,9 @@ public class ClassicScorer : IScorer<int>
         return partida.Teams().OrderByDescending(team => team.Sum(player => partida.Hand(player).
                 Sum(TokenScorer)));
     }
+
+    public override string ToString() 
+        => "Las fichas valen la suma de sus datas, gana el equipo con menor data";
 }
 
 public class ModFiveScorer : IScorer<int>
@@ -34,8 +37,9 @@ public class ModFiveScorer : IScorer<int>
     public IEnumerable<Team<int>> Winner(Partida<int> partida)
         => partida.Teams().OrderByDescending(team => team.Sum(player => partida.Board.
             Where(move => move.PlayerId == partida.PlayerId(player) && !move.Check).Sum(move => Scorer(partida, move))));
-        // => partida.TeamOf(partida.Players().MaxBy(player => partida.Board.
-        //     Where(move => move.PlayerId == partida.PlayerId(player) && !move.Check).Sum(move => Scorer(partida, move)))!);
+
+    public override string ToString()
+        => "Si la ficha suma un multiplo de 5 por donde va a jugar, ese es el valor del movimiento.\nGana el que alcance mayor puntuacion";
 }
 
 public class TurnDividesBoardScorer : IScorer<int>
@@ -66,6 +70,9 @@ public class TurnDividesBoardScorer : IScorer<int>
         => partida.Teams().OrderByDescending(team => team.Sum(player => partida.Board.Enumerate().
             Where(pair => !pair.Item2.Check && pair.Item2.PlayerId == partida.PlayerId(player)).
             Sum(pair => _scores[partida].First(x => x.turn == pair.Item1).score)));
+
+    public override string ToString()
+        => "Si la suma del tablero es divisible entre el numero de turnos, la ficha vale su valor, gana el de mayor puntuacion";
 }
 
 public static class ScorerExtensors
@@ -90,4 +97,8 @@ internal class InverseScorer<T> : IScorer<T>
         => _scorer.TokenScorer(token) is 0 ? int.MaxValue : 1 / (_scorer.TokenScorer(token));
 
         public IEnumerable<Team<T>> Winner(Partida<T> partida) => _scorer.Winner(partida).Reverse();
+
+    public override string ToString()
+        => $@"Union:
+    {_scorer.ToString()!.Replace("\n","\n\t")}";
 }

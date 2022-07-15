@@ -32,14 +32,14 @@ public static class Program
         // Game<int> game = new Game<int>(new ClassicJudge(), teams);
 
         var judge = new ClassicJudge();
-        var tournament = new EliminatoryTournament<int>(judge, teams);
+        var tournament = new EliminatoryTournament<int>();
 
         foreach (var game in tournament.SetJudge(judge).SetTeams(teams))
-        foreach (var gameState in game) {
-            // Console.Clear();
-            System.Console.WriteLine(gameState);
-            Console.ReadLine();
-        }
+            foreach (var gameState in game) {
+                // Console.Clear();
+                System.Console.WriteLine(gameState);
+                Console.ReadLine();
+            }
 
         Console.ReadLine();
     }

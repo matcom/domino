@@ -84,7 +84,7 @@ public class Judge<T> {
 
 public class ClassicJudge : Judge<int>
 {
-    public ClassicJudge() : base(new ClassicGenerator(10), new ClassicDealer<int>(10), 
-		new ClassicTurner<int>(), new Rules.LonganaMatcher<int>().Intersect(new EqualMatcher<int>()), 
-		new ClassicScorer(), new ClassicFinisher<int>()) { }
+    public ClassicJudge() : base(new ClassicGenerator(), new ClassicDealer<int>(55, 10), 
+		new ClassicTurner<int>(), new SideMatcher<int>().Intersect(new EqualMatcher<int>()), 
+		new ClassicScorer(), new PlayerEndFinisher<int>()) { }
 }

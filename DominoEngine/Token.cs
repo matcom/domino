@@ -1,12 +1,16 @@
 ﻿namespace DominoEngine;
 
-public readonly struct Token<T> {
-	public readonly T Head;
-	public readonly T Tail;
+public class Token<T> {
+    private T _head;
+    private T _tail;
 
-	public Token(T head, T tail) {
-		Tail = tail;
-		Head = head;
+    public T Tail { get => _tail; }
+
+    public T Head { get => _head; }
+
+    public Token(T head, T tail) {
+		_tail = tail;
+		_head = head;
 	}
 
 	public override bool Equals(object? obj) => obj is Token<T> obj1 && Equals(obj1);

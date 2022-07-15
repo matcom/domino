@@ -2,17 +2,29 @@ using DominoEngine;
 
 namespace Rules;
 
-public class ClassicFinisher<T> : IFinisher<T>
+public class PlayerEndFinisher<T> : IFinisher<T>
 {
     public bool GameOver(Partida<T> partida)
-        => AllCheck(partida) || PlayerEnd(partida);
+        => PlayerEnd(partida);
+
+    private static bool PlayerEnd(Partida<T> partida) 
+        => partida.Players().Any(player => partida.Hand(player).IsEmpty());
+
+    public override string ToString()
+        => "El juego termina cuando un jugador se pega";
+}
+
+public class AllCheckFinisher<T> : IFinisher<T>
+{
+    public bool GameOver(Partida<T> partida)
+        => AllCheck(partida);
 
     private bool AllCheck(Partida<T> partida)
         => partida.Players().All(player => !partida.Board.Where(move => move.PlayerId == partida.PlayerId(player)).IsEmpty() 
             && partida.Board.Last(x => x.PlayerId == partida.PlayerId(player)).Check);
 
-        private static bool PlayerEnd(Partida<T> partida) 
-        => partida.Players().Any(player => partida.Hand(player).IsEmpty());
+    public override string ToString()
+        => "El juego termina cuando la ultima jugada de cada player fue un pase";
 }
 
 public class TurnCountFinisher<T> : IFinisher<T>
@@ -24,6 +36,9 @@ public class TurnCountFinisher<T> : IFinisher<T>
 
     public bool GameOver(Partida<T> partida)
         => partida.Board.Count(move => !move.Check) > _number;
+
+    public override string ToString()
+        => "El juego termina cuando se ha jugado n cantidad de fichas";
 }
 
 public class PassesCountFinisher<T> : IFinisher<T>
@@ -36,6 +51,9 @@ public class PassesCountFinisher<T> : IFinisher<T>
 
     public bool GameOver(Partida<T> partida)
         => partida.Board.Count(move => move.Check) > _number;
+
+    public override string ToString()
+        => "El juego termina cuando los players se han pasado n veces en total";
 }
 
 public static class FinisherExtensors
@@ -59,6 +77,11 @@ internal class IntersectFinisher<T> : IFinisher<T>
 
     public bool GameOver(Partida<T> partida)
         => _finisher1.GameOver(partida) && _finisher2.GameOver(partida);
+
+    public override string ToString()
+        => $@"Intersect:
+    {_finisher1.ToString()!.Replace("\n","\n\t")}
+	{_finisher2.ToString()!.Replace("\n","\n\t")}";
 }
 
 internal class JoinFinisher<T> : IFinisher<T>
@@ -73,4 +96,9 @@ internal class JoinFinisher<T> : IFinisher<T>
 
     public bool GameOver(Partida<T> partida)
         => _finisher1.GameOver(partida) || _finisher2.GameOver(partida);
+
+    public override string ToString()
+        => $@"Union:
+    {_finisher1.ToString()!.Replace("\n","\n\t")}
+	{_finisher2.ToString()!.Replace("\n","\n\t")}";
 }

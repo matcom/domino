@@ -6,13 +6,16 @@ public class ClassicTurner<T> : ITurner<T>
 {
     // Turner clasico que reparte los turnos en un orden estricto
     public IEnumerable<Player<T>> Players(Partida<T> partida) => partida.Teams().OneByOne().Infinity();
+
+    public override string ToString()
+        => "Sentido de los turnos clasico";
 }
 
 public class NPassesReverseTurner<T> : ITurner<T>
 {
     private readonly int _n; 
-    public NPassesReverseTurner(int n) {
-        _n = n;
+    public NPassesReverseTurner(int NumberOfPasses) {
+        _n = NumberOfPasses;
     }
 
     // Cambia el sentido de reparticion de turnos cuando ocurran n pases
@@ -32,7 +35,10 @@ public class NPassesReverseTurner<T> : ITurner<T>
                 break;
             }
         }
-    }    
+    }   
+
+    public override string ToString()
+        => "Despues de n pases, el sentido de los turnos se invierte"; 
 }
 
 public class RandomTurner<T> : ITurner<T>
@@ -41,4 +47,7 @@ public class RandomTurner<T> : ITurner<T>
         while (true)
             yield return partida.Players().ElementAt(new Random().Next(partida.Players().Count()));
     }
+
+    public override string ToString()
+        => "Devuelve los turnos en un orden aleatorio";
 }

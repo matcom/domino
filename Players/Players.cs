@@ -5,13 +5,13 @@ public class RandomPlayer<T> : Player<T>
 {
     public RandomPlayer(string name) : base(name) {}
 
-    public override IEnumerable<Move<T>> PreferenceCriterion(IEnumerable<Move<T>> moves, 
+    public override Move<T> Play(IEnumerable<Move<T>> moves, 
         Func<int, IEnumerable<int>> passesInfo, List<Move<T>> board, Func<int, int> inHand, 
             Func<Move<T>, double> scorer, Func<int, int, bool> partner)
-                => moves.OrderBy(move => Random.Next());
+                => moves.ElementAt(Random.Next(moves.Count()));
 }
 
-public class Botagorda<T> : Player<T>
+public class Botagorda<T> : CriterionPlayer<T>
 {
     public Botagorda(string name) : base(name) {}
 
@@ -23,7 +23,7 @@ public class Botagorda<T> : Player<T>
                 => moves.OrderByDescending(scorer);
 }
 
-public class DestroyerPlayer<T> : Player<T>
+public class DestroyerPlayer<T> : CriterionPlayer<T>
 {
     private readonly Botagorda<T> _aux;
     public DestroyerPlayer(string name) : base(name) {
@@ -62,7 +62,7 @@ public class DestroyerPlayer<T> : Player<T>
                 Any(turns => turns.Any(turn => turn is -1 ? Equals(board[0].Head,tail) : Equals(board[turn].Tail,tail))));
 }
 
-public class SupportPlayer<T> : Player<T>
+public class SupportPlayer<T> : CriterionPlayer<T>
 {
     private readonly Botagorda<T> _aux;
     public SupportPlayer(string name) : base(name) {
@@ -105,7 +105,7 @@ public class SupportPlayer<T> : Player<T>
                 Any(turns => turns.Any(turn => turn is -1 ? Equals(board[0].Head,tail) : Equals(board[turn].Tail,tail))));
 }
 
-public class SelfishPlayer<T> : Player<T> where T : notnull
+public class SelfishPlayer<T> : CriterionPlayer<T> where T : notnull
 {
     private readonly Botagorda<T> _aux;
     public SelfishPlayer(string name) : base(name) {
@@ -136,7 +136,7 @@ public class SelfishPlayer<T> : Player<T> where T : notnull
     }
 }
 
-public class SmartPlayer<T> : Player<T> where T : notnull
+public class SmartPlayer<T> : CriterionPlayer<T> where T : notnull
 {
     private readonly SelfishPlayer<T> _selfish;
     private readonly SupportPlayer<T> _helper;
@@ -151,9 +151,12 @@ public class SmartPlayer<T> : Player<T> where T : notnull
     public override IEnumerable<Move<T>> PreferenceCriterion(IEnumerable<Move<T>> moves, 
         Func<int, IEnumerable<int>> passesInfo, List<Move<T>> board, Func<int, int> inHand, 
             Func<Move<T>, double> scorer, Func<int, int, bool> partner) {
-                var first = _selfish.SetHand(Hand!).PreferenceCriterion(moves, passesInfo, board, inHand, scorer, partner);
-                var second = _helper.SetHand(Hand!).PreferenceCriterion(moves, passesInfo, board, inHand, scorer, partner);
-                var third = _destroyer.SetHand(Hand!).PreferenceCriterion(moves, passesInfo, board, inHand, scorer, partner);
+                var first = ((CriterionPlayer<T>)_selfish.SetHand(Hand!))
+                    .PreferenceCriterion(moves, passesInfo, board, inHand, scorer, partner);
+                var second = ((CriterionPlayer<T>)_helper.SetHand(Hand!)).
+                    PreferenceCriterion(moves, passesInfo, board, inHand, scorer, partner);
+                var third = ((CriterionPlayer<T>)_destroyer.SetHand(Hand!)).
+                    PreferenceCriterion(moves, passesInfo, board, inHand, scorer, partner);
 
                 if (MakeRivalsTeams(board, partner).IsEmpty() || MakeTeam(board, partner).IsEmpty())
                     return first;
