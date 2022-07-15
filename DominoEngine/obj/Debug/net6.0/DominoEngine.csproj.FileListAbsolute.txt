@@ -1,0 +1,12 @@
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\bin\Debug\net6.0\DominoEngine.deps.json
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\bin\Debug\net6.0\DominoEngine.dll
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\bin\Debug\net6.0\ref\DominoEngine.dll
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\bin\Debug\net6.0\DominoEngine.pdb
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.csproj.AssemblyReference.cache
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.GeneratedMSBuildEditorConfig.editorconfig
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.AssemblyInfoInputs.cache
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.AssemblyInfo.cs
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.csproj.CoreCompileInputs.cache
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.dll
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\ref\DominoEngine.dll
+C:\Alex\Proyectos Pro\Domino\Domino\domino\DominoEngine\obj\Debug\net6.0\DominoEngine.pdb

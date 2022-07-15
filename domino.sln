@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DominoEngine", "DominoEngine\DominoEngine.csproj", "{7707BB13-9023-421D-9B30-7B7FE69EA2A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Players", "Players\Players.csproj", "{92F61061-8C39-4F61-875A-18659EC6BFDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tester", "Tester\Tester.csproj", "{DF93A116-E795-46D1-82A7-9E9060F7B62B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7707BB13-9023-421D-9B30-7B7FE69EA2A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7707BB13-9023-421D-9B30-7B7FE69EA2A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7707BB13-9023-421D-9B30-7B7FE69EA2A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7707BB13-9023-421D-9B30-7B7FE69EA2A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92F61061-8C39-4F61-875A-18659EC6BFDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F61061-8C39-4F61-875A-18659EC6BFDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F61061-8C39-4F61-875A-18659EC6BFDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F61061-8C39-4F61-875A-18659EC6BFDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF93A116-E795-46D1-82A7-9E9060F7B62B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF93A116-E795-46D1-82A7-9E9060F7B62B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF93A116-E795-46D1-82A7-9E9060F7B62B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF93A116-E795-46D1-82A7-9E9060F7B62B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
