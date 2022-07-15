@@ -2,7 +2,7 @@ using DominoEngine;
 
 namespace Rules;
 
-public class PlayerEndFinisher<T> : IFinisher<T>
+public class EmptyHandFinisher<T> : IFinisher<T>
 {
     public bool GameOver(Partida<T> partida)
         => PlayerEnd(partida);
@@ -30,8 +30,8 @@ public class AllCheckFinisher<T> : IFinisher<T>
 public class TurnCountFinisher<T> : IFinisher<T>
 {
     private readonly int _number;
-    public TurnCountFinisher(int number) {
-        _number = number;
+    public TurnCountFinisher(int numberOfTurns) {
+        _number = numberOfTurns;
     }
 
     public bool GameOver(Partida<T> partida)
@@ -44,9 +44,8 @@ public class TurnCountFinisher<T> : IFinisher<T>
 public class PassesCountFinisher<T> : IFinisher<T>
 {
     private readonly int _number;
-    public PassesCountFinisher(int number)
-    {
-        _number = number;
+    public PassesCountFinisher(int numberOfPasses) {
+        _number = numberOfPasses;
     }
 
     public bool GameOver(Partida<T> partida)

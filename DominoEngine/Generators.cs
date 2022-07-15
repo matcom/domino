@@ -16,10 +16,8 @@ public class ClassicGenerator : IGenerator<int>
         => "Genera todas las fichas de forma clasica";
 }
 
-public class NotDoubleGenerator : IGenerator<int>
+public class NoDoubleGenerator : IGenerator<int>
 {
-    public NotDoubleGenerator() {}
-
     IEnumerable<Token<int>> IGenerator<int>.Generate() {
         for (var i = 0; ; i++)
             for (var j = 0; j < i; j++)
@@ -32,8 +30,6 @@ public class NotDoubleGenerator : IGenerator<int>
 
 public class SumPrimeGenerator : IGenerator<int>
 {
-    public SumPrimeGenerator(int number) {}
-
     IEnumerable<Token<int>> IGenerator<int>.Generate() {
         var tokens = new List<Token<int>>();
 

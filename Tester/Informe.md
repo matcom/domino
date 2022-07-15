@@ -56,7 +56,13 @@ public abstract Move<T> Play(IEnumerable<Move<T>> possibleMoves, Func<int, IEnum
 * `partner`: Es una función que recibe una tupla `(int,int)`, el Id de dos players, y devuelve un `bool` que indica si ambos jugadores están en el mismo equipo.
 
 #### `Team`
-Es una lista de `Player` que representa a los jugadores que pertenecen a un mismo equipo. La idea de esta clase surge de la posibilidad del juego en equipo, y no hacer 
+Es una lista de `Player` que representa a los jugadores que pertenecen a un mismo equipo. La idea de esta clase surge de la posibilidad del juego en equipo, y no hacer diferencias a jugar en equipo de a uno, es decir, en solitario.
+
+#### `Partida`
+Es una clase que representa una partida. Tiene una lista de `Team` que representan a los equipos que participan en la partida, las `Hand` de los players que participan en ella, y en general toda la información que se pudiera necesitar para jugar. Solo necesita en su constructor las lista de los jugadores que iteractuan. La mayoría de los delegados que recibe el `Player` son métodos de esta clase.
+
+#### `Judge`
+
 
 
 
