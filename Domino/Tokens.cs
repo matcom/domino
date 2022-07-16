@@ -38,11 +38,10 @@ public class DominoToken : ITokenGenerator {
 
     public override string ToString()
     {
-        return $"({Left} | {Right})";
-    }
+        if (this.Left == -1 || this.Right == -1)
+            return "Domino Token";
 
-    public virtual string Represent() {
-        return "Domino Token";
+        return $"({Left} | {Right})";
     }
 
     public virtual IList<DominoToken> GenerateTokens(int tokenValues) { 
@@ -79,9 +78,11 @@ public class SixUnvaluableDominoToken : DominoToken {
         return value;
     }
 
-    public override string Represent()
-    {
-        return $"Six Unvaluable {base.Represent()}";
+    public override string ToString() {
+        if (this.Left == -1 || this.Right == -1)
+            return "Six Unvaluable Domino Token";
+            
+        return base.ToString();
     }
     
     public override IList<DominoToken> GenerateTokens(int tokenValues) {
@@ -110,9 +111,11 @@ public class DoubledValueDominoToken : DominoToken {
         return  2 * base.Value();
     }
 
-    public override string Represent()
-    {
-        return $"Doubled Value {base.Represent()}";
+    public override string ToString() {
+        if (this.Left == -1 || this.Right == -1)
+            return "Doubled Value Domino Token";
+
+        return base.ToString();
     }
 
     public override IList<DominoToken> GenerateTokens(int tokenValues)
