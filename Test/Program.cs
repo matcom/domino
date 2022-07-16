@@ -1,27 +1,52 @@
-﻿// See https://aka.ms/new-console-template for more information
-using Domino.Game;
+﻿using Domino.Game;
 using Domino.Tokens;
 using Domino.Players;
 using Domino.Referee;
 
+System.Console.WriteLine("Welcome to this Domino Game");
+System.Console.WriteLine("To play you must select this relevant game options from a list:");
+System.Console.WriteLine("");
+System.Console.WriteLine("To continue press any key...");
 
-System.Console.WriteLine("Enter max value amount: ");
+Console.ReadLine();
+Console.Clear();
+
+
+System.Console.WriteLine("Enter player amount: ");
+System.Console.WriteLine("Default: 4 players");
 string? input = Console.ReadLine();
-int tokenValue = int.Parse(input == null ? "" : input);
+int playerCount = int.Parse(input! == "" ? "4" : input!);
 
 Console.Clear();
 
-System.Console.WriteLine("Enter player tokens amount: ");
-string? playerTokens = Console.ReadLine();
-int tokensPerPlayer = int.Parse(playerTokens == null ? "" : playerTokens);
+System.Console.WriteLine("Enter max value amount: ");
+System.Console.WriteLine("Default: Double 7");
+input = Console.ReadLine();
+int tokenValue = int.Parse(input! == "" ? "7" : input!);
 
-DominoPlayer[] players = new DominoPlayer[4];
+Console.Clear();
+
+int maxTokensPerPlayer = (tokenValue * (tokenValue + 1)) / (2 * playerCount);
+
+System.Console.WriteLine("Enter player tokens amount: ");
+System.Console.WriteLine("Default: 7");
+System.Console.WriteLine("NOTE: This is for standard 4 players");
+System.Console.WriteLine($"Otherwise this amount must be less or equal than {maxTokensPerPlayer}");
+
+input = Console.ReadLine();
+int tokensPerPlayer = int.Parse(input! == "" ? "7" : input!);
+
+Console.Clear();
+
+
+DominoPlayer[] players = new DominoPlayer[playerCount];
 IWinCondition win;
 IWinner winner;
 DominoToken token;
 
-for (int i = 0; i < 4; i++) {
+for (int i = 0; i < playerCount; i++) {
     Console.Clear();
+    System.Console.WriteLine($"There are already {i} players");
     System.Console.WriteLine("Select a player to add: ");
 
     DominoPlayer[] dominoPlayers = new DominoPlayer[]{
@@ -31,12 +56,14 @@ for (int i = 0; i < 4; i++) {
         new DataDominoPlayer($"Player {i + 1}", tokenValue)
     };
 
+    System.Console.WriteLine($"Default: {dominoPlayers[0]}");
+
     for (int j = 0; j < dominoPlayers.Length; j++) {
         System.Console.WriteLine($"{j} - {dominoPlayers[j]}");
     }
 
     input = Console.ReadLine();
-    int playerIndex = int.Parse(input == null ? "" : input);
+    int playerIndex = int.Parse(input! == "" ? "0" : input!);
 
     players[i] = dominoPlayers[playerIndex];
 }
@@ -49,12 +76,14 @@ IWinCondition[] winConditions = new IWinCondition[]{
     new FourRoundsWinCondition()
 };
 
+System.Console.WriteLine($"Default: {winConditions[0]}");
+
 for (int j = 0; j < winConditions.Length; j++) {
     System.Console.WriteLine($"{j} - {winConditions[j]}");
 }
 
 input = Console.ReadLine();
-int winIndex = int.Parse(input == null ? "" : input);
+int winIndex = int.Parse(input! == "" ? "0" : input!);
 
 win = winConditions[winIndex];
 
@@ -66,12 +95,14 @@ IWinner[] winners = new IWinner[]{
     new MoreTokensWinner()
 };
 
+System.Console.WriteLine($"Default: {winners[0]}");
+
 for (int j = 0; j < winners.Length; j++) {
     System.Console.WriteLine($"{j} - {winners[j]}");
 }
 
 input = Console.ReadLine();
-int winnerIndex = int.Parse(input == null ? "" : input);
+int winnerIndex = int.Parse(input! == "" ? "0" : input!);
 
 winner = winners[winnerIndex];
 
@@ -84,12 +115,14 @@ DominoToken[] tokens = new DominoToken[]{
     new DoubledValueDominoToken()
 };
 
+System.Console.WriteLine($"Default: {tokens[0]}");
+
 for (int j = 0; j < tokens.Length; j++) {
-    System.Console.WriteLine($"{j} - {tokens[j].Represent()}");
+    System.Console.WriteLine($"{j} - {tokens[j]}");
 }
 
 input = Console.ReadLine();
-int tokenIndex = int.Parse(input == null ? "" : input);
+int tokenIndex = int.Parse(input! == "" ? "0" : input!);
 token = tokens[tokenIndex];
 
 DominoGame game = new DominoGame(
