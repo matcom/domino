@@ -10,11 +10,11 @@
 ## Uso
 - Compilar los sources
     - Linux y MacOS
-    ```make build```
+    > ```make build```
     - Windows
-    ```dotnet build```
+    > ```dotnet build```
 - Correr la app visual
     - Linux y MacOS
-    ```make run```
+    > ```make run```
     - WIndows
-    ```dotnet run --project UI```
+    > ```dotnet run --project UI```
