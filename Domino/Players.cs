@@ -146,6 +146,10 @@ public class HumanDominoPlayer : DominoPlayer {
     }
 }
 
+/// <summary>
+///     Implementation for a domino player that plays prioritizing a given data, which
+///     is defined as the token numeration with more ocurrences within player's hand
+/// </summary>
 public class DataDominoPlayer : DominoPlayer {
     int data = -1;
     int maxTokenValue;

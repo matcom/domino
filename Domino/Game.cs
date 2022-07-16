@@ -4,6 +4,11 @@ using Domino.Referee;
 
 namespace Domino.Game;
 
+/// <summary>
+///     Basic Domino Game implementation, it uses composition to assemble different game
+///     concepts together, as Win Condition, Winner, Token type, Players, and given a 
+///     pre-condition as Token Max Value and Max Tokens in hand per Player
+/// </summary>
 public class DominoGame {
     IList<DominoPlayer> players;
     IEnumerable<DominoToken>[] playerTokens;
@@ -52,6 +57,10 @@ public class DominoGame {
         StartGame();
     }
     
+    /// <summary>
+    ///     This mehod begins the game, setting an initial state and requesting first player to 
+    ///     make a valid move
+    /// </summary>
     void StartGame() {
         this.startToken = this.players[this.currentPlayer].PlayStartToken(playerTokens[this.currentPlayer]);
         this.playerTokens[this.currentPlayer] = playerTokens[this.currentPlayer].Where(
@@ -65,6 +74,9 @@ public class DominoGame {
         NextPlayer();
     }
 
+    /// <summary>
+    ///     Returns if a given player can make a move or not
+    /// </summary>
     bool CanPlay(int playerIndex) {
         foreach(DominoToken token in this.playerTokens[playerIndex]) {
             if (this.freeValues.Contains(token.Right) || this.freeValues.Contains(token.Left)) {
@@ -75,6 +87,9 @@ public class DominoGame {
         return false;
     }
 
+    /// <summary>
+    ///     Sets internal game state to allow next player to play
+    /// </summary>
     void NextPlayer() {
         if (this.currentPlayer == this.players.Count - 1)
             this.currentPlayer = 0;
@@ -82,6 +97,9 @@ public class DominoGame {
             this.currentPlayer++;
     }
 
+    /// <summary>
+    ///     Adds a move to the internal move collection of the game, after a players makes it
+    /// </summary>
     void AddMove(DominoMove move) {
         this.moves.Add(move);
 
@@ -101,6 +119,10 @@ public class DominoGame {
         );
     }
 
+    /// <summary>
+    ///     Main game method, it runs the implemented game logic and join together all the 
+    ///     game pieces to make a Domino game work as expected
+    /// </summary>
     public void Result() {
         if (!ended) {
             while (!this.winCondition.Achieved(

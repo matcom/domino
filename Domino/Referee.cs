@@ -4,7 +4,13 @@ using Domino.Game;
 
 namespace Domino.Referee;
 
+/// <summary>
+///     Interface that represents if a given game has met the stop conditions
+/// </summary>
 public interface IWinCondition {
+    /// <summary>
+    ///     Boolean method to decide if given a game status, the win condition has been met
+    /// </summary>
     public bool Achieved(
         IEnumerable<DominoPlayer> players, 
         IEnumerable<IEnumerable<DominoToken>> playerTokens, 
@@ -12,6 +18,9 @@ public interface IWinCondition {
     );
 }
 
+/// <summary>
+///     Standard game win conditions implementations: 4 passes in a row or no player can play
+/// </summary>
 public class StandardWinCondition : IWinCondition {
     public bool Achieved(
         IEnumerable<DominoPlayer> players, 
@@ -32,6 +41,10 @@ public class StandardWinCondition : IWinCondition {
     }
 }
 
+/// <sumary>
+///     Four game rounds condition: the round concept is taken as when all players have played,
+///     in a row, even if they did not make a move
+///</summary>
 public class FourRoundsWinCondition : IWinCondition {
     int counter = 4;
     int turns = 0;
@@ -56,44 +69,19 @@ public class FourRoundsWinCondition : IWinCondition {
     }
 }
 
-public interface IPlayerOrder {
-    public int NextPlayer(IEnumerable<DominoPlayer> players, int currentIndex, int passCounter);
-}
-
-public class StandardPlayerOrder : IPlayerOrder {
-    public int NextPlayer(IEnumerable<DominoPlayer> players, int currentIndex, int passCounter) {
-        return currentIndex % players.Count();
-    }
-
-    public override string ToString()
-    {
-        return "Standard Domino Player Order";
-    }
-}
-
-public class OnPassInvertedPlayerOrder : IPlayerOrder {
-    bool inverted = false;
-
-    public int NextPlayer(IEnumerable<DominoPlayer> players, int currentIndex, int passCounter) {
-        if (passCounter > 0)
-            inverted = true;
-
-        if (!inverted)
-            return Math.Abs(currentIndex++ % players.Count());
-        else
-            return Math.Abs(currentIndex-- % players.Count());
-    }
-
-    public override string ToString()
-    {
-        return "On Pass Inverted player Order";
-    }
-}
-
+/// <summary>
+///     Interface for winner concept abstraction. No tie concept implemented yet
+/// </summary>
 public interface IWinner {
+    /// <summary>
+    ///     Given a certain game state, returns the player that met the winner conditions
+    /// </summary>
     public DominoPlayer GetWinner(IEnumerable<DominoPlayer> players, IEnumerable<IEnumerable<DominoToken>> playerTokens);
 }
 
+/// <summary>
+///     The player with the less score (token value) wins
+/// </summary>
 public class MinValueWinner : IWinner {
     public DominoPlayer GetWinner(IEnumerable<DominoPlayer> players, IEnumerable<IEnumerable<DominoToken>> playerTokens) {
         int[] playerScores = new int[players.Count()];
@@ -115,6 +103,9 @@ public class MinValueWinner : IWinner {
     }
 }
 
+/// <summary>
+///     The player with the highest amount of tokens in hand wins
+/// </summary>
 public class MoreTokensWinner : IWinner {
     public DominoPlayer GetWinner(IEnumerable<DominoPlayer> players, IEnumerable<IEnumerable<DominoToken>> playerTokens) {
         int[] playerTokenAmount = new int[players.Count()];
