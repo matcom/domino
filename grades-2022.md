@@ -29,6 +29,12 @@
 | Francisco Vicente Suarez Bellon | C212  | Leandro          | [#29](https://github.com/matcom/domino/issues/29) | Sep 06   |4-5   |
 | Claudia Alvarez Martínez        | C212  | Leandro          | [#34](https://github.com/matcom/domino/issues/34) | Sep 07   |3-4   |
 | Roger Moreno Gutiérrez          | C212  | Leandro          | [#34](https://github.com/matcom/domino/issues/34) | Sep 07   |3-4   |
+| Angel Daniel Cabrera Joya       | C212  | Daniel           | [#32](https://github.com/matcom/domino/issues/32) | Sep 05   |5     |
+| Jesús Armando Padrón Rabeiro    | C211  | Daniel           | [#18](https://github.com/matcom/domino/issues/18) | Sep 05   |3     |
+| Jose Agustin del Toro Gonzalez  | C212  | Daniel           | [#44](https://github.com/matcom/domino/issues/44) | Sep 05   |4     |
+| Maykol Luis Martinez Rodriguez  | C212  | Daniel           | [#44](https://github.com/matcom/domino/issues/44) | Sep 05   |4     |
+| Alex Sánchez Saez               | C212  | Daniel           | [#16](https://github.com/matcom/domino/issues/16) | Sep 06   |5     |
+| Abdel Fregel Hernández          | C212  | Daniel           | [#16](https://github.com/matcom/domino/issues/16) | Sep 06   |5     |
 | Maday Mircia Suarez Velázquez   | C211  | Javier           | [#21](https://github.com/matcom/domino/issues/21) | Jul 22   |5     |
 | Kevin Majim Ortega Alvarez      | C212  | Javier           | [#21](https://github.com/matcom/domino/issues/21) | Jul 22   |5     |
 | Marcos Antonio Perez Lorenzo    | C212  | Javier           | [#24](https://github.com/matcom/domino/issues/24) | Jul 22   |5     |
