@@ -29,6 +29,17 @@
 | Francisco Vicente Suarez Bellon | C212  | Leandro          | [#29](https://github.com/matcom/domino/issues/29) | Sep 06   |4-5   |
 | Claudia Alvarez Martínez        | C212  | Leandro          | [#34](https://github.com/matcom/domino/issues/34) | Sep 07   |3-4   |
 | Roger Moreno Gutiérrez          | C212  | Leandro          | [#34](https://github.com/matcom/domino/issues/34) | Sep 07   |3-4   |
+| Maday Mircia Suarez Velázquez   | C211  | Javier           | [#21](https://github.com/matcom/domino/issues/21) | Jul 22   |5     |
+| Kevin Majim Ortega Alvarez      | C212  | Javier           | [#21](https://github.com/matcom/domino/issues/21) | Jul 22   |5     |
+| Marcos Antonio Perez Lorenzo    | C212  | Javier           | [#24](https://github.com/matcom/domino/issues/24) | Jul 22   |5     |
+| Davier Sanchez Bello            | C212  | Javier           | [#24](https://github.com/matcom/domino/issues/24) | Jul 22   |5     |
+| David Barroso Rey               | C211  | Javier           | [#36](https://github.com/matcom/domino/issues/36) | Jul 22   |5     |
+| José Damian Tadeo Escarrá       | C212  | Javier           | [#36](https://github.com/matcom/domino/issues/36) | Jul 22   |5     |
+| Brayan Durán Medina             | C212  | Javier           | [#27](https://github.com/matcom/domino/issues/27) | Jul 22   |5     |
+| Chavely González Acosta         | C212  | Javier           | [#27](https://github.com/matcom/domino/issues/27) | Jul 22   |5     |
+| Max Bengochea                   | C211  | Javier           | [#45](https://github.com/matcom/domino/issues/45) | Jul 22   |5     |
+| Juan Carlos Espinosa            | C211  | Javier           | [#47](https://github.com/matcom/domino/issues/47) | Sep 9    |3     |
+| Anthuán Montes de Oca Pons      | C211  | Javier           | [#47](https://github.com/matcom/domino/issues/47) | Sep 9    |3     |
 | Brian Ameht Inclan Quesada      | C211  | Tony             | [#2](https://github.com/matcom/domino/issues/2)   | Jul 20   |5     |
 | Dariel Matinez Perez            | C211  | Tony             | [#2](https://github.com/matcom/domino/issues/2)   | Jul 20   |5     |
 | Randy Jesús Rivero Córdova      | C212  | Tony             | [#20](https://github.com/matcom/domino/issues/20) | Jul 21   |5     |
