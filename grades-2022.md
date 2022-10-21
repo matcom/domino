@@ -69,3 +69,7 @@
 | Sherlyn Ballestero Cruz            | C212  | Daniel    | [#35](https://github.com/matcom/domino/issues/35)  | Jul 22   |  4   |
 | Yoan René Ramos Corrales           | C212  | Raúl      | [#22](https://github.com/matcom/domino/issues/22)  | Sep 03   |  4   |
 | Yonatan Guerra Perez               | C211  | Tony      | [#42](https://github.com/matcom/domino/issues/42)  | Sep 14   |  4   |
+| Fernando Rodríguez González        | C211  | Jorge     | [#14](https://github.com/matcom/domino/issues/14)  | Sep 06   |  5   |
+| Enzo Rojas D'Toste.                | C211  | Jorge     | [#14](https://github.com/matcom/domino/issues/14)  | Sep 06   |  5   |
+| Lazaro David Alba Ajete            | C211  | Jorge     | [#43](https://github.com/matcom/domino/issues/43)  | Sep 12   |  3+  |
+| Jose Carlos Pendas Rodriguez       | C211  | Jorge     | [#43](https://github.com/matcom/domino/issues/43)  | Sep 12   |  3+  |
